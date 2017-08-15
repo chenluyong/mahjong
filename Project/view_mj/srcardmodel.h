@@ -2,7 +2,7 @@
 #define SRCARDMODEL_H
 
 #include "stdafx.h"
-
+#include <functional>
 #include <QObject>
 
 class SRCardModel : public QObject
@@ -12,6 +12,9 @@ public:
     explicit SRCardModel(QObject *parent = nullptr);
 
     void setCardData(BYTE* _cardData, BYTE _cardCount = MAX_COUNT);
+
+    BYTE getCardData(int _index);
+
 
 
 signals:

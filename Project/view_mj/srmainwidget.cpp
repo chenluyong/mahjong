@@ -29,9 +29,36 @@ SRMainWidget::SRMainWidget(QWidget *parent)
             player_[3],SLOT(onDealCard(enDirection,BYTE*,BYTE)));
 
 
+    connect(player_[0], SIGNAL(outCard(enDirection,BYTE)),
+            desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
+    connect(player_[1], SIGNAL(outCard(enDirection,BYTE)),
+            desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
+    connect(player_[2], SIGNAL(outCard(enDirection,BYTE)),
+            desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
+    connect(player_[3], SIGNAL(outCard(enDirection,BYTE)),
+            desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
+
+
+    connect(desktop_, SIGNAL(emPlayCard(enDirection,BYTE)),
+            player_[0],SLOT(onOtherPlayState(enDirection,BYTE)));
+    connect(desktop_, SIGNAL(emPlayCard(enDirection,BYTE)),
+            player_[1],SLOT(onOtherPlayState(enDirection,BYTE)));
+    connect(desktop_, SIGNAL(emPlayCard(enDirection,BYTE)),
+            player_[2],SLOT(onOtherPlayState(enDirection,BYTE)));
+    connect(desktop_, SIGNAL(emPlayCard(enDirection,BYTE)),
+            player_[3],SLOT(onOtherPlayState(enDirection,BYTE)));
+
+
+
+
     // ·¢ÅÆ
     for (int i = 0; i < GAME_PLAYER; ++i)
         desktop_->onDealCard(player_[i]->getDirection(), 13);
+
+
+    // ¿ª¾Ö
+    desktop_->onStart();
+
 }
 
 SRMainWidget::~SRMainWidget()

@@ -17,4 +17,15 @@ void SRCardModel::setCardData(BYTE *_cardData, BYTE _cardCount)
         cardCount_ = _cardCount;
     }
 
+
+    std::sort(cardData_,cardData_+cardCount_);
+
+}
+
+BYTE SRCardModel::getCardData(int _index)
+{
+    if (_index > cardCount_)
+        return -1;
+
+    return cardData_[_index];
 }

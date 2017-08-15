@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+CONFIG += C++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -30,7 +31,8 @@ SOURCES += \
     srplayerdesktop.cpp \
     srdesktop.cpp \
     srplayermodel.cpp \
-    srcardmodel.cpp
+    srcardmodel.cpp \
+    srcommon.cpp
 
 HEADERS += \
         srmainwidget.h \
@@ -39,4 +41,5 @@ HEADERS += \
     srdesktop.h \
     srplayermodel.h \
     srcardmodel.h \
-    stdafx.h
+    stdafx.h \
+    srcommon.h

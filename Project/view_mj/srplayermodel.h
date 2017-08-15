@@ -13,7 +13,7 @@ public:
 
     void setDirection(enDirection _direction) { direction_ = _direction; }
     enDirection getDirection(void) {return direction_;}
-public:
+private:
 
     enDirection direction_;
 

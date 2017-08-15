@@ -1,6 +1,7 @@
 #include "srplayerdesktop.h"
 #include "srplayermodel.h"
 #include "srcardmodel.h"
+#include "srcommon.h"
 
 #include <iomanip>
 #include <iostream>
@@ -12,7 +13,6 @@
 
 SRPlayerDesktop::SRPlayerDesktop(QWidget *parent) : QWidget(parent)
 {
-
     model_ = new SRPlayerModel;
     layout_ = new QBoxLayout(QBoxLayout::LeftToRight);
     cardModel_ = new SRCardModel;
@@ -51,11 +51,35 @@ void SRPlayerDesktop::onDealCard(enDirection direction, BYTE *data, BYTE count)
     // 第一次分发
     if (count == MAX_COUNT)
         cardModel_->setCardData(data,count);
+    else if (count == 1)
+        onPlayState(*data);
+    else
+        qDebug() << "????";
 
-//    std::cout << getDirectionName() << ": "<< std::endl;
-//    for (int i = 0; i < count; ++i)
-//        std::cout << std::showbase << std::setw(5) << std::hex <<(int)data[i] << ",";
-//    std::cout << std::endl;
+
+}
+
+void SRPlayerDesktop::onPlayState(BYTE data)
+{
+    BYTE out_card = data;
+    // 分析牌型
+
+    // 替换掉要打出的牌
+
+    // 发送出牌通知
+    emit outCard(getDirection(),out_card);
+}
+
+void SRPlayerDesktop::onOtherPlayState(enDirection direction, BYTE data)
+{
+    if (direction == getDirection())
+        return;
+
+    // 分析其他人的出牌阶段
+    qDebug() << QString(QStringLiteral("%1在分析%2出的 %3")).arg(sr::getDirectionNameQ(getDirection()))
+                .arg(sr::getDirectionNameQ(direction)).arg(sr::convertCard(data));
+
+    // 弹出吃碰胡信号
 }
 
 
@@ -73,5 +97,14 @@ const char* const SRPlayerDesktop::getDirectionName()
     default:
         return "????";
     }
+}
+
+
+void SRPlayerDesktop::paintEvent(QPaintEvent *event)
+{
+    for(int i = 0; i < MAX_COUNT; ++i)
+        listButton_.at(i)->setText(sr::convertCard(cardModel_->getCardData(i)));
+
+    QWidget::paintEvent(event);
 }
 
