@@ -32,7 +32,14 @@ protected:
 signals:
 
     // ³öÅÆÐÅºÅ
-    void outCard(enDirection direction, BYTE data);
+    void emOutCard(enDirection direction, BYTE data);
+
+    // ºú
+    void emHu(enDirection direction, BYTE* data, BYTE count);
+    // Åö
+    void emPeng(enDirection direction, BYTE* data, BYTE count);
+    // ³Ô
+    void emChi(enDirection direction, BYTE* data, BYTE count);
 
 public slots:
 

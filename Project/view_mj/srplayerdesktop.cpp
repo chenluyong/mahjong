@@ -11,13 +11,13 @@
 #include <QPushButton>
 
 
-SRPlayerDesktop::SRPlayerDesktop(QWidget *parent) : QWidget(parent)
-{
+SRPlayerDesktop::SRPlayerDesktop(QWidget *parent) : QWidget(parent) {
     model_ = new SRPlayerModel;
     layout_ = new QBoxLayout(QBoxLayout::LeftToRight);
     cardModel_ = new SRCardModel;
 
-    for(int i = 0; i < MAX_COUNT; ++i) {
+    // 建立基础布局
+    for(int i = 0; i < MAX_COUNT + 1; ++i) {
         listButton_.push_back(new QPushButton());
         layout_->addWidget(listButton_.at(i));
         listButton_.at(i)->setFixedSize(50,75);
@@ -64,10 +64,15 @@ void SRPlayerDesktop::onPlayState(BYTE data)
     BYTE out_card = data;
     // 分析牌型
 
+    listButton_.back()->setStyleSheet("QPushButton{background:white;}");
+
+    listButton_.back()->setText(sr::convertCard(out_card));
+
+
     // 替换掉要打出的牌
 
     // 发送出牌通知
-    emit outCard(getDirection(),out_card);
+//    emit emOutCard(getDirection(),out_card);
 }
 
 void SRPlayerDesktop::onOtherPlayState(enDirection direction, BYTE data)
@@ -80,6 +85,7 @@ void SRPlayerDesktop::onOtherPlayState(enDirection direction, BYTE data)
                 .arg(sr::getDirectionNameQ(direction)).arg(sr::convertCard(data));
 
     // 弹出吃碰胡信号
+
 }
 
 

@@ -7,6 +7,7 @@
 namespace sr {
 
 QString convertCard(BYTE card);
+BYTE convertCard(QString card);
 
 QString getDirectionNameQ(enDirection direction);
 const char* const getDirectionNameC(enDirection direction);

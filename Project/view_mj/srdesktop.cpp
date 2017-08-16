@@ -9,11 +9,15 @@ SRDesktop::SRDesktop(QWidget *parent) : QWidget(parent) {
     memset(cbCardDataArray_,0,sizeof(cbCardDataArray_));
     darkCardLayout_ = new QGridLayout;
     brightnessCardLayout_ = new QGridLayout;
+
+    // 建立基础布局
     layout_ = new QBoxLayout(QBoxLayout::Direction::TopToBottom);
     layout_->addLayout(darkCardLayout_);
     layout_->addLayout(brightnessCardLayout_);
 
     setLayout(layout_);
+
+
 }
 
 void SRDesktop::onShuffle() {

@@ -29,13 +29,13 @@ SRMainWidget::SRMainWidget(QWidget *parent)
             player_[3],SLOT(onDealCard(enDirection,BYTE*,BYTE)));
 
 
-    connect(player_[0], SIGNAL(outCard(enDirection,BYTE)),
+    connect(player_[0], SIGNAL(emOutCard(enDirection,BYTE)),
             desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
-    connect(player_[1], SIGNAL(outCard(enDirection,BYTE)),
+    connect(player_[1], SIGNAL(emOutCard(enDirection,BYTE)),
             desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
-    connect(player_[2], SIGNAL(outCard(enDirection,BYTE)),
+    connect(player_[2], SIGNAL(emOutCard(enDirection,BYTE)),
             desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
-    connect(player_[3], SIGNAL(outCard(enDirection,BYTE)),
+    connect(player_[3], SIGNAL(emOutCard(enDirection,BYTE)),
             desktop_,SIGNAL(emPlayCard(enDirection,BYTE)));
 
 
@@ -47,6 +47,7 @@ SRMainWidget::SRMainWidget(QWidget *parent)
             player_[2],SLOT(onOtherPlayState(enDirection,BYTE)));
     connect(desktop_, SIGNAL(emPlayCard(enDirection,BYTE)),
             player_[3],SLOT(onOtherPlayState(enDirection,BYTE)));
+
 
 
 
