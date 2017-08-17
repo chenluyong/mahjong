@@ -10,28 +10,17 @@
 #define MJ_ROBOT_API __declspec(dllimport)
 #endif
 
-
-struct stCardData {
-	unsigned char* card;
-	int size;
-
-	stCardData(void):card(nullptr),size(0) {}
-
-	bool empty(void) {
-		return (!card);
-	}
-};
-
+#include "mj_header.h"
 
 // 更新牌局
 MJ_ROBOT_API int SRSetGameCardData(const stCardData _inDesktopCard,
 									const stCardData _inNotShowCard);
 
 // 更新玩家牌
-MJ_ROBOT_API int SRSetPlayerCardData(const stCardData _inPlayer_Left,
-									const stCardData _inPlayer_Above,
-									const stCardData _inPlayer_Right,
-									const stCardData _inPlayer_Myself);
+MJ_ROBOT_API int SRSetPlayerCardData(enDirection _inDec, stCardData _inCard);
+
+// 设置主人公
+MJ_ROBOT_API int SRSetGameProtagonists(enDirection _inDec);
 
 
 // 询问出牌

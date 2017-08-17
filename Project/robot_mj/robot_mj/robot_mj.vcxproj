@@ -147,14 +147,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SRGameLogic.cpp" />
-    <ClCompile Include="SRPlayerLogic.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CMD_Sparrow.h" />
-    <ClInclude Include="SRGameLogic.h" />
-    <ClInclude Include="SRInterfaceBase.h" />
-    <ClInclude Include="SRPlayerLogic.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
