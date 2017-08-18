@@ -48,6 +48,16 @@ int SRCardMagic::getCardIndexData(BYTE * _out_cardIndex, BYTE * _out_count)
 	return 0;
 }
 
+int SRCardMagic::addCardData(BYTE _card)
+{
+	return 0;
+}
+
+int SRCardMagic::delCardData(BYTE _card)
+{
+	return 0;
+}
+
 		   
 int SRCardMagic::isTing(const BYTE _cardIndex[])
 {
