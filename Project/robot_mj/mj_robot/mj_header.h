@@ -26,6 +26,17 @@ typedef unsigned char BYTE;
 #define CARDTYPE_SHUN		0x08 // 顺子		123
 
 
+//动作标志
+#define WIK_NULL					0x00								//没有类型
+#define WIK_LEFT					0x01								//左吃类型
+#define WIK_CENTER					0x02								//中吃类型
+#define WIK_RIGHT					0x04								//右吃类型
+#define WIK_PENG					0x08								//碰牌类型
+#define WIK_GANG					0x10								//杠牌类型
+#define WIK_LISTEN					0x20								//听牌类型
+#define WIK_CHI_HU					0x40								//吃胡类型
+
+
 
 struct stCardData {
 	unsigned char card[255];

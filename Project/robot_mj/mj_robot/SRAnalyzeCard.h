@@ -18,6 +18,7 @@ public:
 
 	// 游戏基础资源设置
 public:
+	void reset(void);
 	// 设置已打出的牌
 	void setGameCardForShow(stCardData _data);
 
@@ -34,7 +35,9 @@ public:
 	// 牌型分析
 public:
 	// 获得要出的牌
-	int getOutCard(unsigned char* _out_card);
+	int getOutCard(unsigned char _in_card, unsigned char* _out_card);
+
+	int getAction(unsigned char _in_card);
 
 
 private:
@@ -53,6 +56,9 @@ private:
 
 
 private:
+
+
+	bool isTing_ = false;
 
 	// 已出的牌型
 	stCardData showCardData_;

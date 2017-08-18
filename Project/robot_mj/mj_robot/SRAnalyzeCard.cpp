@@ -15,6 +15,11 @@ SRAnalyzeCard::~SRAnalyzeCard()
 {
 }
 
+void SRAnalyzeCard::reset(void)
+{
+	isTing = false;
+}
+
 void SRAnalyzeCard::setGameCardForShow(stCardData _data)
 {
 	showCardData_ = _data;
@@ -35,12 +40,45 @@ void SRAnalyzeCard::setGameProtagonists(enDirection _dec)
 	protagonists_ = _dec;
 }
 
-int SRAnalyzeCard::getOutCard(unsigned char * _out_card) {
+int SRAnalyzeCard::getOutCard(unsigned char _in_card, unsigned char * _out_card) {
+
 	if (_out_card == nullptr)
 		return -1;
 
 
-	srand((unsigned int)time(0));
+	// 将牌插入到牌型中
+	mapCardData_[protagonists_].addCardData(_in_card);
+	// 获得当前牌型数据
+	BYTE card_index[MAX_INDEX] = {};
+	mapCardData_[protagonists_].getCardIndexData(card_index);
+
+	
+
+	// 检查听牌
+	if (!isTing_ && 0 == SRCardMagic::isTing(card_index)) {
+		isTing_ = true;
+
+		// 检查出无用的牌，将其打出
+		_out_card;
+
+		return WIK_LISTEN;
+	}
+	else if (isTing_ && 0 == SRCardMagic::isWin(card_index)) {
+		return WIK_CHI_HU;
+	}
+
+
+	// 既不能听，又不能胡，那么就开始套路打牌。
+	
+
+
+
+
+
+	DEBUG("去除间隔2个空位的不连续单牌，从两头向中间排查")
+
+	DEBUG("去除间隔1个空位的不连续单牌，从两头向中间排查")
+
 
 	DEBUG("分析主角牌型,获得需要打出的牌")
 	
@@ -84,6 +122,27 @@ int SRAnalyzeCard::getOutCard(unsigned char * _out_card) {
 	   // 1. 生张  2. 
 
 	return 0;
+}
+
+int SRAnalyzeCard::getAction(unsigned char _in_card)
+{
+	BYTE card_index[MAX_INDEX] = {};
+	mapCardData_[protagonists_].getCardIndexData(card_index);
+
+	// 判断胡牌
+	if (isTing_) {
+		card_index[SRCardMagic::switchToCardIndex(_in_card)]++;
+		if (0 == SRCardMagic::isWin(card_index))
+			return WIK_CHI_HU;
+		return WIK_NULL;
+	}
+
+	// 询问吃碰杠
+	
+
+
+
+	return WIK_NULL;
 }
 
 void SRAnalyzeCard::analyzeGamePlayer(enDirection _in_dec, stCardData * _out_dynamic, stCardData * _out_static)

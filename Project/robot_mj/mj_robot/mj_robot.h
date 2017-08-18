@@ -12,6 +12,7 @@
 
 #include "mj_header.h"
 
+MJ_ROBOT_API int SRResetGame(void);
 // 更新牌局
 MJ_ROBOT_API int SRSetGameCardData(const stCardData _inDesktopCard,
 									const stCardData _inNotShowCard);
@@ -23,10 +24,10 @@ MJ_ROBOT_API int SRSetPlayerCardData(enDirection _inDec, stCardData _inCard);
 MJ_ROBOT_API int SRSetGameProtagonists(enDirection _inDec);
 
 
-// 询问出牌
-MJ_ROBOT_API int SRAskOutCard(unsigned char* _outCard);
+// 询问出牌(自己摸牌时)
+MJ_ROBOT_API int SRAskOutCard(unsigned char _inCard, unsigned char* _outCard);
 										  
-// 询问行为
+// 询问行为(当别人出牌时)
 MJ_ROBOT_API int SRAskAction(unsigned char _inCard);
 
 // 询问胡牌

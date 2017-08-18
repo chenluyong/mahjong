@@ -2,6 +2,7 @@
 #define _SHANREN_CARD_MAGIC_H_
 
 #include "mj_header.h"
+#include <vector>
 
 
 class SRCardMagic
@@ -22,8 +23,37 @@ public:
 	virtual ~SRCardMagic();
 
 
+	// 获得卡牌大小
 	int getCardSize(void) const;
+	// 获得牌型数据
+	int getCardIndexData(BYTE* _out_cardIndex, BYTE* _out_count = nullptr);
+	// 添加一张牌
+	int addCardData(BYTE _card);
+	// 删除一张牌
+	int delCardData(BYTE _card);
 
+	// 获得需求的牌型
+	std::vector<BYTE> getRequire(void) const;
+
+
+public:
+
+	static int isTing(const BYTE _cardIndex[]);
+
+	// 判定胡牌
+	static int isWin(const BYTE _cardIndex[], int _duiIndex = 0);
+
+	// 获得当前牌的刻顺数量
+	static int getKeAndShun(const BYTE _cardIndex[]);
+
+	//有效判断
+	static bool isValidCard(BYTE cbCardData);
+
+	//扑克转换
+	static BYTE switchToCardIndex(BYTE cbCardData);
+
+	//扑克转换
+	static BYTE switchToCardData(BYTE cbCardIndex);
 private:
 
 	//分析扑克
@@ -33,14 +63,6 @@ private:
 
 private:
 
-	//有效判断
-	bool isValidCard(BYTE cbCardData) const;
-
-	//扑克转换
-	BYTE switchToCardIndex(BYTE cbCardData) const;
-
-	//扑克转换
-	BYTE switchToCardData(BYTE cbCardIndex) const;
 
 
 private:

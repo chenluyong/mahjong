@@ -7,6 +7,13 @@
 
 static SRAnalyzeCard gAnalyzeCard;
 
+
+MJ_ROBOT_API int SRResetGame(void)
+{
+	gAnalyzeCard.reset();
+	return 0;
+}
+
 // 更新牌局
 MJ_ROBOT_API int SRSetGameCardData(const stCardData _inDesktopCard,
 	const stCardData _inNotShowCard) {
@@ -28,18 +35,13 @@ MJ_ROBOT_API int SRSetGameProtagonists(enDirection _inDec) {
 
 
 // 询问出牌
-MJ_ROBOT_API int SRAskOutCard(unsigned char* _outCard) {
-	// 查看是否有牌可跟
-
-	// 分析三家牌型
-
-	// 分析自己的劣牌
-	return 0;
+MJ_ROBOT_API int SRAskOutCard(unsigned char _inCard, unsigned char* _outCard) {
+	return gAnalyzeCard.getOutCard(_inCard, _outCard);
 }
 
 // 询问碰牌
 MJ_ROBOT_API int SRAskAction(unsigned char _inCard) {
-	return 0;
+	return gAnalyzeCard.getAction(_inCard);
 }
 
 // 询问胡牌
