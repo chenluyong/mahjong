@@ -11,7 +11,7 @@ typedef unsigned char BYTE;
 // 常量定义
 #define MAX_WEAVE					4									//最大组合
 #define MAX_INDEX					34									//最大索引
-#define MAX_COUNT					17									//最大数目
+#define MAX_COUNT					14									//最大数目
 #define MAX_REPERTORY				136									//最大库存
 
 #define	MASK_COLOR					0xF0								//花色掩码

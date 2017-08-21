@@ -38,10 +38,17 @@ public:
 
 public:
 
-	static int isTing(const BYTE _cardIndex[]);
+	static int isTing(const BYTE _cardIndex[], int _indexBegin = 0);
 
 	// 判定胡牌
 	static int isWin(const BYTE _cardIndex[], int _duiIndex = 0);
+
+	static int isSameColor(BYTE _arg1, BYTE _arg2, BYTE _arg3 = 0);
+
+	// 返回下标
+	static int isIntervalTwo(const BYTE _cardIndex[]);
+	// 返回下标
+	static int isIntervalOne(const BYTE _cardIndex[]);
 
 	// 获得当前牌的刻顺数量
 	static int getKeAndShun(const BYTE _cardIndex[]);
@@ -69,6 +76,7 @@ private:
 
 	BYTE cardIndex_[MAX_INDEX];
 	stCardData srcCardData_;
+
 };
 
 #endif // _SHANREN_CARD_MAGIC_H_

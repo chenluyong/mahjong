@@ -60,6 +60,8 @@ private:
 
 	bool isTing_ = false;
 
+	std::vector<int> vecTingIndex_;
+
 	// 已出的牌型
 	stCardData showCardData_;
 	// 未摸的牌型

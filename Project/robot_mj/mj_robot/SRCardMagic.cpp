@@ -1,5 +1,6 @@
 #include "SRCardMagic.h"
 #include <vector>
+#include <algorithm>
 
 
 SRCardMagic::SRCardMagic(const stCardData& _cardData)
@@ -11,7 +12,7 @@ SRCardMagic::SRCardMagic(const stCardData& _cardData)
 	for (int i = 0; i < MAX_COUNT; ++i) 
 		cardIndex_[switchToCardIndex(_cardData.card[i])]++;
 	
-	int i = isTing(cardIndex_);
+	int i = isWin(cardIndex_);
 	analyseCard();
 }
 
@@ -31,8 +32,8 @@ bool SRCardMagic::isValidCard(BYTE cbCardData) {
 int SRCardMagic::getCardSize(void) const {
 	BYTE cbCardCount = 0;
 	for (BYTE i = 0; i<MAX_INDEX; i++)
-		cbCardCount += cardIndex_[i];
-	return cbCardCount;
+cbCardCount += cardIndex_[i];
+return cbCardCount;
 }
 
 int SRCardMagic::getCardIndexData(BYTE * _out_cardIndex, BYTE * _out_count)
@@ -50,37 +51,54 @@ int SRCardMagic::getCardIndexData(BYTE * _out_cardIndex, BYTE * _out_count)
 
 int SRCardMagic::addCardData(BYTE _card)
 {
+	cardIndex_[switchToCardIndex(_card)]++;
 	return 0;
 }
 
 int SRCardMagic::delCardData(BYTE _card)
 {
+	if (_card > MAX_INDEX + 3)
+		return -1;
+
+	cardIndex_[switchToCardIndex(_card)]--;
 	return 0;
 }
 
-		   
-int SRCardMagic::isTing(const BYTE _cardIndex[])
+
+int SRCardMagic::isTing(const BYTE _cardIndex[], int _indexBegin)
 {
+	if (_indexBegin > MAX_INDEX)
+		return -2;
+
 	BYTE card_index[MAX_INDEX] = {};
 	memcpy(card_index, _cardIndex, sizeof(_cardIndex[0]) * MAX_INDEX);
 
-	for (int i = 0; i < MAX_INDEX; ++i) {
-		++card_index[i];
+	for (; _indexBegin < MAX_INDEX; ++_indexBegin) {
+		++card_index[_indexBegin];
 
 		if (0 == isWin(card_index))
-			return 0;
+			return _indexBegin;
 
-		--card_index[i];
+		--card_index[_indexBegin];
 	}
 	return -1;
 }
 
 int SRCardMagic::isWin(const BYTE _cardIndex[], int _duiIndex)
 {
+	//计算数目				 
 	BYTE card_index[MAX_INDEX] = {};
 	memcpy(card_index, _cardIndex, sizeof(_cardIndex[0])*MAX_INDEX);
+	BYTE cbCardCount = 0;
 
-	
+	for (BYTE i = 0; i < MAX_INDEX; i++)
+		cbCardCount += card_index[i];
+
+	if ((cbCardCount < 2) || (cbCardCount > MAX_COUNT) || ((cbCardCount - 2) % 3 != 0))
+		return -1;
+
+
+
 	for (int i = 0, k = 0; i < MAX_INDEX; ++i) {
 		if (card_index[i] >= 2) {
 			// 该将是否已判定过
@@ -99,8 +117,52 @@ int SRCardMagic::isWin(const BYTE _cardIndex[], int _duiIndex)
 	}
 
 
-	
+
 	return -1;
+}
+
+int SRCardMagic::isSameColor(BYTE _arg1, BYTE _arg2, BYTE _arg3)
+{
+
+	return 0;
+}
+
+int SRCardMagic::isIntervalTwo(const BYTE _cardIndex[])
+{
+	int index = 0;
+	BYTE card_index[MAX_INDEX];
+	memcpy(card_index, _cardIndex, sizeof(_cardIndex[0]) * MAX_INDEX);
+	// 没有番牌的最大下标
+	const int cMax_Index = MAX_INDEX - 7;
+	for (; index < MAX_INDEX - 7; ++index) {
+		// 判定单张 同一区间
+		if (_cardIndex[index] > 0 && ((index % 9) < 7)) {
+			if (isSameColor(_cardIndex[index], _cardIndex[index + 1], _cardIndex[index + 2])) {
+				// 顺子的牌
+				if ((_cardIndex[index - 1] > 0) && (_cardIndex[index + 1] > 0)
+					|| (_cardIndex[index - 1] > 0) && (_cardIndex[index - 2] > 0)) {
+					index += 2;
+					continue;
+				}
+			}
+			// 顺子的牌
+			if ((_cardIndex[index + 1] > 0) && (_cardIndex[index + 2] > 0)
+				|| (_cardIndex[index - 1] > 0) && (_cardIndex[index + 1] > 0)
+				|| (_cardIndex[index - 1] > 0) && (_cardIndex[index - 2] > 0)) {
+				index += 2;
+				continue;
+			}
+			else {
+				return index;
+			}
+		}
+	}
+	return -1;
+}
+
+int SRCardMagic::isIntervalOne(const BYTE _cardIndex[])
+{
+	return 0;
 }
 
 int SRCardMagic::getKeAndShun(const BYTE _cardIndex[]) {

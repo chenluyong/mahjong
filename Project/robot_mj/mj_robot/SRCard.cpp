@@ -16,20 +16,41 @@ SRCard::~SRCard()
 {
 }
 
-int SRCard::getIntervalOne(int _indexBegin)
-{			   // 没有番牌的最大下标
-	const int cMax_Index = MAX_INDEX - 7;
+BYTE SRCard::getOutCard(void)
+{
+	// 计算当前手牌的最优组合
 
+	return 0;
+}
+
+int SRCard::getFanPaiOne(int _indexBegin)
+{
+	if (_indexBegin == 0)
+		_indexBegin = MAX_INDEX - 8;
+	else if (_indexBegin <= MAX_INDEX - 8)
+		return -1;
+
+	for (int i = _indexBegin; i < MAX_INDEX; ++i) {
+		if (cardIndex_[i] == 1) {
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+int SRCard::getIntervalOne(int _indexBegin)
+{			   
 	BYTE card_index[MAX_INDEX] = {};
 	memcpy(card_index, cardIndex_, sizeof(cardIndex_[0])*MAX_INDEX);
 
-	for (int i = 0; i < 4; ++i) {
-		const int& INDEX_END = i * 9 + 9;
+	for (int i = _indexBegin / 9; i <= MAX_INDEX / 9; ++i) {
+		const int& INDEX_END = i * 9 + 9, &INDEX_BEGIN = i * 9;
 
-		for (int index_begin = i * 9, INDEX_BEGIN = i * 9; index_begin < INDEX_END; ++index_begin) {
+		for (int index_begin = INDEX_BEGIN; index_begin < INDEX_END; ++index_begin) {
 
 			// 没有牌 或者 牌在指定的范围之前 都选择跳过
-			if (card_index[index_begin] == 0 || index_begin < _indexBegin)
+			if (card_index[index_begin] == 0 || index_begin <= _indexBegin)
 				continue;
 
 			const int arg1 = index_begin - 1;
@@ -51,23 +72,23 @@ int SRCard::getIntervalOne(int _indexBegin)
 }
 
 int SRCard::getIntervalTwo(int _indexBegin) {
-	// 没有番牌的最大下标
-	const int cMax_Index = MAX_INDEX - 7;
 
+	// 不改动原数据
 	BYTE card_index[MAX_INDEX] = {};
 	memcpy(card_index, cardIndex_, sizeof(cardIndex_[0])*MAX_INDEX);
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = _indexBegin / 9; i <= MAX_INDEX / 9; ++i) {
 		const int& INDEX_END = i * 9 + 9;
+		const int& INDEX_BEGIN = i * 9;
 
-		for (int index_begin = i * 9, INDEX_BEGIN = i * 9; index_begin < INDEX_END; ++index_begin) {
+		for (int index_begin = INDEX_BEGIN; index_begin < INDEX_END; ++index_begin) {
 
 			// 没有牌 或者 牌在指定的范围之前 都选择跳过
 			if (card_index[index_begin] == 0 || index_begin < _indexBegin)
 				continue;
 
-			const int arg1 = index_begin - 1, arg2 = index_begin - 2;
-			const int arg3 = index_begin + 1, arg4 = index_begin + 2;
+			const int& arg1 = index_begin - 1, &arg2 = index_begin - 2;
+			const int& arg3 = index_begin + 1, &arg4 = index_begin + 2;
 
 			// 判断相邻
 			if ((arg1 > INDEX_BEGIN && card_index[arg1] > 0)
@@ -101,9 +122,65 @@ int SRCard::getSumKeShun(void)
 }
 
 
+int SRCard::analyseCard(BYTE _cardIndex[MAX_INDEX])
+{
+	std::vector<stWinItem> vec_win_item;
+
+
+	
+
+	stWinItem temp_item;
+
+
+
+
+
+	return 0;
+}
+
 bool SRCard::isSameColor(BYTE arg1, BYTE arg2, BYTE arg3)
 {
 	return false;
+}
+
+int SRCard::getCardWeight(BYTE card)
+{
+	return 0;
+}
+
+int SRCard::getKeAndShun(const BYTE _cardIndex[], stWinItem & _winItem)
+{
+	// 不修改原值
+	BYTE cbCardIndex[MAX_INDEX] = {};
+	memcpy(cbCardIndex, _cardIndex, sizeof(_cardIndex[0])* MAX_INDEX);
+
+	// 组合数量变量声明		
+	BYTE cbKindItemCount = 0;
+
+	// 拆分分析
+	for (BYTE i = 0; i < MAX_INDEX; i++) {
+		//同牌判断
+		if (cbCardIndex[i] >= 3) {
+			++cbKindItemCount;
+			cbCardIndex[i] -= 3;
+		}
+		// 连牌判断
+		if ((i<(MAX_INDEX - 9)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
+			for (; 1 <= cbCardIndex[i];) {
+				// 顺子的牌
+				if ((cbCardIndex[i + 1] >= 1) && (cbCardIndex[i + 2] >= 1)) {
+					++cbKindItemCount;
+					cbCardIndex[i] -= 1;
+					cbCardIndex[i + 1] -= 1;
+					cbCardIndex[i + 2] -= 1;
+				}
+				else
+					break;
+			}
+
+		}
+	}
+	return cbKindItemCount;
 }
 
 int SRCard::getKeAndShun(const BYTE _cardIndex[]) {
@@ -142,7 +219,8 @@ int SRCard::getKeAndShun(const BYTE _cardIndex[]) {
 
 
 int SRCard::isWin(const BYTE _cardIndex[], int _duiIndex)
-{			//计算数目				 
+{			
+	//计算数目				 
 	BYTE card_index[MAX_INDEX] = {};
 	memcpy(card_index, _cardIndex, sizeof(_cardIndex[0])*MAX_INDEX);
 	BYTE cbCardCount = 0;

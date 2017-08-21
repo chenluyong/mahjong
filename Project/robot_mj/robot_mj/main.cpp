@@ -65,13 +65,19 @@ int main(void) {
 	//	0x05, 0x11 };
 	BYTE temp_card[255] = { 0x01, 0x02, 0x03,
 							0x01, 0x02, 0x03,
-							0x12, 0x13, 0x14,
+							0x01, 0x12, 0x13,
 							0x13, 0x14, 0x15,
-							0x16, 0x16 };
+							0x01, 0x11 };
 
 	memcpy(card.card, temp_card, sizeof(temp_card));
 	
+	SRSetGameProtagonists(enDirection::East);
 	SRSetPlayerCardData(enDirection::East, card);
+	BYTE temp_out_card = 0;
+	SRAskOutCard(0x11, &temp_out_card);
+	SRAskOutCard(0x01, &temp_out_card);
+	//SRAskOutCard(0x01, &temp_out_card);
+	//SRAskOutCard(0x01, &temp_out_card);
 	//SRSetPlayerCardData(enDirection::East, card);
 
 	
