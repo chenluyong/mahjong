@@ -11,8 +11,12 @@
 SRRobot::SRRobot(void) {
 	// 数据初始化
 	isTing_ = -1;
+	memset(arrTing_, 0, sizeof(arrTing_));
+	numTing_ = 0;
+
 	invisibleMahjongPool_ = nullptr;
 	visibleMahjongPool_ = nullptr;
+
 	direction_ = enDirection::None;
 	for (int i = 0; i < sizeof(mahjong_) / sizeof(mahjong_[0]); ++i)
 		mahjong_[i] = nullptr;
@@ -28,35 +32,46 @@ int SRRobot::touchCard(int direction) {
 		return -1;
 
 	// 摸牌
-	invisibleMahjongPool_->touchCard(pmj, direction);
-
+	pmj->addCard(invisibleMahjongPool_->pop_front());
 	return 0;
 }
 
 int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count) {
+	// 数据校验
 	if (out_card == nullptr || out_card_count == nullptr)
 		return -87;
-
 	SRMahjong* pmj = nullptr;
 	if (direction_ != enDirection::None)
 		pmj = mahjong_[direction_];
-
 	if (pmj == nullptr)
 		return -1;
 
-
-	if (isTing_ <= 0) {
-		// 判听
-		isTing_ = SRAnalysis::isTing(pmj->data(), pmj->size());
-
+	// 判断自摸
+	if (SRAnalysis::isWin(pmj->data(), pmj->size())) {
+		return WIK_CHI_HU;
 	}
 
-	if (isTing_ > 0) {
-		// 听牌算法
-		
+
+	// 听牌分析
+	unsigned char temp_discard[MAX_COUNT];
+	memset(temp_discard, 0, sizeof(temp_discard));
+	// 听牌算法
+	if (isTing_ > 0 || (isTing_ = SRAnalysis::isTing(pmj->data(), 
+		pmj->size(), temp_discard, arrTing_, &numTing_)) > 0) {
+		// 检查所听牌型场上情况
+
+		// 若不在牌墙，且在玩家手上已成顺刻牌型，则考虑换听牌。
+
+
+		*out_card = temp_discard[0];
+		*out_card_count = 1;
+		pmj->delCard(*out_card);
+
 		return WIK_LISTEN;
 	}
 
+
+	// 套路出牌
 	do {
 		// 有杠先杠
 		for (unsigned char i = 0, s = 0; i < MAX_INDEX; ++i) {
@@ -65,9 +80,12 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 				// 检测若在听牌的情况下，如果杠了 是否还能听牌, 杠了是不是牌型会变的更差
 				int i = 0;
 
-				
 				*out_card = SRAnalysis::switchToCardData(s);
 				*out_card_count = 4;
+
+				for(int i = 0; i < *out_card_count; ++i)
+					pmj->delCard(*out_card);
+
 				return WIK_GANG;
 			}
 		}
@@ -76,6 +94,7 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 		int index = pmj->getIntervalTwo();
 		if (index > 0) {
 			*out_card = SRAnalysis::switchToCardData(index);
+			*out_card_count = 1;
 			break;
 		}
 
@@ -96,17 +115,39 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 				}
 			}
 			*out_card = SRAnalysis::switchToCardData(index);
+			*out_card_count = 1;
 			break;
 		}
 
+
+		// 若函数进行到这里，说明牌型比较复杂了，需要加入权重概念进行深度分析
+
+		*out_card = pmj->getLastTouchCard();
+		*out_card_count = 1;
 	} while (false);
 
+	// 删除打出的牌
+	for (int i = 0; i < *out_card_count; ++i)
+		pmj->delCard(*out_card);
 
 	return WIK_NULL;
 }
 
 int SRRobot::getAction(enDirection drc, unsigned char card) {
-	
+
+	SRMahjong* pmj = nullptr;
+	if (direction_ != enDirection::None)
+		pmj = mahjong_[direction_];
+
+	if (pmj == nullptr)
+		return -1;
+
+	if (0 == SRAnalysis::isWin(pmj->data(), pmj->size())) {
+		return WIK_CHI_HU;
+	}
+
+	// 四川麻将判断碰、杠
+
 	return 0;
 }
 

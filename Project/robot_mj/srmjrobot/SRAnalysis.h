@@ -25,8 +25,8 @@ public:
 	//ÆË¿Ë×ª»»
 	static unsigned char switchToCardData(unsigned char cbCardIndex);
 
-	static int isTing(const unsigned char* data, unsigned char count,
-		const unsigned char * out_data = nullptr, unsigned char* out_count = nullptr);
+	static int isTing(const unsigned char* data, unsigned char count, unsigned char* out_discard,
+		unsigned char * out_data = nullptr, unsigned char* out_count = nullptr);
 
 	static int isWin(const unsigned char* data, unsigned char count);
 

@@ -23,11 +23,18 @@ public:
 
 	unsigned char size(void) const;
 
+	void addCard(unsigned char card);
+
+	void delCard(unsigned char card);
+
+	unsigned char getLastTouchCard(void) const { return lastTouchCard_; }
+
+
 
 public:
 
-	unsigned char operator[] (const int &index) { return cardIndex_[index]; }
-	unsigned char getIndex(unsigned char& index) { return cardIndex_[index]; }
+	unsigned char operator[] (const int &idx) { return cardIndex_[idx]; }
+	unsigned char getIndex(unsigned char& idx) { return cardIndex_[idx]; }
 	 
 public:
 
@@ -44,14 +51,16 @@ public:
 protected:
 
 
-private:
 
 	// 麻将的索引数据
 	unsigned char cardIndex_[MAX_INDEX];
 
-	unsigned char cardData_[MAX_REPERTORY + 1];
+	unsigned char cardData_[MAX_COUNT + 1];
 	unsigned char cardCount_;
 	unsigned char index_;
+
+	// 最后一张摸的牌
+	unsigned char lastTouchCard_;
 
 };
 

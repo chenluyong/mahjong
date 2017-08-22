@@ -11,6 +11,8 @@ SRMahjong::SRMahjong(unsigned char cardData[], unsigned char cardCount) {
 	memset(cardData_, 0, sizeof(cardData_));
 	cardCount_ = cardCount;
 	index_ = 0;
+	
+	lastTouchCard_ = 0;
 
 #ifdef _DEBUG
 	int card_size = cardCount * sizeof(unsigned char);
@@ -41,6 +43,20 @@ void SRMahjong::sort(void) {
 unsigned char SRMahjong::size(void) const
 {
 	return (unsigned char)strlen((char*)cardData_);
+}
+
+void SRMahjong::addCard(unsigned char card)
+{
+	cardData_[MAX_COUNT] = card;
+	lastTouchCard_ = card;
+}
+
+void SRMahjong::delCard(unsigned char card)
+{
+	auto c = std::find(cardData_, cardData_ + MAX_COUNT, card);
+
+	if (c != nullptr)
+		*c = 0;
 }
 
 

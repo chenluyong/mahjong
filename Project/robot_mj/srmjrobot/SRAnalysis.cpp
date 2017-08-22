@@ -110,9 +110,51 @@ unsigned char SRAnalysis::switchToCardData(unsigned char cbCardIndex) {
 	return ((cbCardIndex / 9) << 4) | (cbCardIndex % 9 + 1);
 }
 
-int SRAnalysis::isTing(const unsigned char * data, unsigned char count, 
-	const unsigned char * out_data, unsigned char* out_count) {
+int SRAnalysis::isTing(const unsigned char * data, unsigned char count, unsigned char* out_discard,
+	unsigned char * out_data, unsigned char* out_count) {
+	// 数据校验
+	if ((count < 2) || (count > MAX_COUNT) || ((count - 2) % 3 != 0))
+		return -87;
 
+	// 数据转换
+	BYTE card_index[MAX_INDEX] = {};
+	for (int i = 0; i < count; ++i) {
+		unsigned char idx = SRAnalysis::switchToCardIndex(data[i]);
+		// 防止idx下标为-1
+		if (idx >= 0)
+			card_index[idx]++;
+	};
 
-	return 0;
+	// 听牌分析
+	int ret = -1;
+	for (unsigned char idx = 0; idx < MAX_INDEX; ++idx) {
+		if (card_index[idx] > 0)
+			--card_index[idx];
+		else
+			continue;
+		
+		for (unsigned char i = 0; i < MAX_INDEX; ++i) {
+			++card_index[i];
+
+			if (0 == isWin(card_index)) {
+				ret = 0;
+				// 这里还需要优化 会出现 要听A张 可出 B 或 C 的情况
+				if (out_data != nullptr) {
+					*out_data = switchToCardIndex(i);
+					++out_data;
+				}
+				if (out_count != nullptr)
+					(*out_count)++;
+
+				*out_discard = switchToCardIndex(idx);
+				++out_discard;
+			}
+
+			--card_index[i];
+		}
+
+		++card_index[idx];
+	}
+			  
+	return ret;
 }

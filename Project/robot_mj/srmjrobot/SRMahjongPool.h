@@ -1,6 +1,7 @@
 #ifndef _SHANREN_MAHJONG_POOL_H_
 #define _SHANREN_MAHJONG_POOL_H_
 
+#include "srmjglobal.h"
 
 #ifdef SRMJROBOT_EXPORTS
 #define SRMJROBOT_API __declspec(dllexport)
@@ -8,11 +9,9 @@
 #define SRMJROBOT_API __declspec(dllimport)
 #endif
 
-#include "SRMahjong.h"
 
 
-class SRMJROBOT_API SRMahjongPool :
-	public SRMahjong
+class SRMJROBOT_API SRMahjongPool
 {
 public:
 
@@ -20,9 +19,20 @@ public:
 
 
 public:
-	void touchCard(SRMahjong* object, int direction);
 
-	
+	int getMahjongPoolData(unsigned char* out_data, unsigned char size);
+
+	unsigned char pop_front(void);
+	unsigned char pop_back(void);
+
+
+private:
+
+	unsigned char cardData_[MAX_COUNT + 1];
+
+	unsigned char indexBegin_;
+	unsigned char indexEnd_;
+
 
 };
 

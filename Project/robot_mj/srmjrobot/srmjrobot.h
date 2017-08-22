@@ -77,7 +77,12 @@ private:
 	// 所有方位的麻将
 	SRMahjong* mahjong_[5];
 
+	// 牌型是否可听
 	int isTing_;
+	// 听的牌
+	unsigned char arrTing_[14];
+	// 可听的数量
+	unsigned char numTing_;
 #endif
 };
 
