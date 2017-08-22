@@ -18,7 +18,11 @@ SRCard::~SRCard()
 
 BYTE SRCard::getOutCard(void)
 {
+	// 确定当前牌型情况
+	
+
 	// 计算当前手牌的最优组合
+
 
 	return 0;
 }
@@ -126,11 +130,41 @@ int SRCard::analyseCard(BYTE _cardIndex[MAX_INDEX])
 {
 	std::vector<stWinItem> vec_win_item;
 
+	stKindItem temp_item;
 
-	
+	//// 不修改原值
+	//BYTE cbCardIndex[MAX_INDEX] = {};
+	//memcpy(cbCardIndex, _cardIndex, sizeof(_cardIndex[0])* MAX_INDEX);
 
-	stWinItem temp_item;
+	//// 组合数量变量声明		
+	//BYTE cbKindItemCount = 0;
 
+	//// 拆分分析
+	//for (BYTE i = 0; i < MAX_INDEX; i++) {
+	//	//同牌判断
+	//	if (cbCardIndex[i] >= 3) {
+	//		temp_item.itemSize = cbCardIndex[i];
+	//		for (int n = 0; n < temp_item.itemSize; ++n)
+	//			stKindItem = i;
+	//		cbCardIndex[i] -= 3;
+	//	}
+	//	// 连牌判断
+	//	if ((i<(MAX_INDEX - 9)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
+	//		for (; 1 <= cbCardIndex[i];) {
+	//			// 顺子的牌
+	//			if ((cbCardIndex[i + 1] >= 1) && (cbCardIndex[i + 2] >= 1)) {
+	//				++cbKindItemCount;
+	//				cbCardIndex[i] -= 1;
+	//				cbCardIndex[i + 1] -= 1;
+	//				cbCardIndex[i + 2] -= 1;
+	//			}
+	//			else
+	//				break;
+	//		}
+
+	//	}
+	//}
+	//return cbKindItemCount;
 
 
 
