@@ -59,6 +59,9 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	if (isTing_ > 0 || (isTing_ = SRAnalysis::isTing(pmj->data(), 
 		pmj->size(), temp_discard, arrTing_, &numTing_)) > 0) {
 		// 检查所听牌型场上情况
+		// 检查是否在牌堆中
+		// invisibleMahjongPool_->find()
+		// 检查是否在玩家手中
 
 		// 若不在牌墙，且在玩家手上已成顺刻牌型，则考虑换听牌。
 
@@ -148,7 +151,7 @@ int SRRobot::getAction(enDirection drc, unsigned char card) {
 
 	// 四川麻将判断碰、杠
 
-	return 0;
+	return WIK_NULL;
 }
 
 void SRRobot::setDirection(enDirection drc) {

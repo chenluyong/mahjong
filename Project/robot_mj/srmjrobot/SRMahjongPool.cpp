@@ -26,6 +26,17 @@ int SRMahjongPool::getMahjongPoolData(unsigned char * out_data, unsigned char si
 	return 0;
 }
 
+int SRMahjongPool::find(unsigned char card_data) const
+{
+	const int& rcount = indexEnd_ - indexBegin_;
+
+	for (int i = 0; i < rcount; ++i)
+		if (cardData_[i + indexBegin_] == card_data)
+			return i;
+
+	return -1;
+}
+
 unsigned char SRMahjongPool::pop_front(void)
 {
 	return cardData_[indexBegin_++];
