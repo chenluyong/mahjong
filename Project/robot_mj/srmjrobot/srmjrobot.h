@@ -86,37 +86,6 @@ private:
 #endif
 };
 
-//
-//
-//// 初始化
-//SRMJROBOT_API int SRInit(void);
-//
-//// 重置
-//SRMJROBOT_API int SRResetGame(void);
-//
-//// 更新牌局
-//SRMJROBOT_API int SRSetGameCardData(void);
-//
-//// 更新玩家牌
-//SRMJROBOT_API int SRSetPlayerCardData(void);
-//
-//// 设置主人公
-//SRMJROBOT_API int SRSetGameProtagonists(void);
-//
-//
-//// 询问出牌(自己摸牌时)
-//SRMJROBOT_API int SRAskOutCard(void);
-//
-//// 询问行为(当别人出牌时)
-//SRMJROBOT_API int SRAskAction(void);
-//
-//// 询问胡牌
-//SRMJROBOT_API int SRAskWinCard(void);
-//
-//// 反初始化
-//SRMJROBOT_API int SRUninit(void);
-//
-
 
 
 #endif // _SHANREN_ROBOT_H_
