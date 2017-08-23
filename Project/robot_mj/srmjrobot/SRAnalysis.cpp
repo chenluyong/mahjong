@@ -68,6 +68,12 @@ int SRAnalysis::isWin(const unsigned char _cardIndex[], int _duiIndex)
 }
 
 
+bool SRAnalysis::isValidCard(unsigned char cbCardData) {
+	unsigned char cbValue = (cbCardData&MASK_VALUE);
+	unsigned char cbColor = (cbCardData&MASK_COLOR) >> 4;
+	return (((cbValue >= 1) && (cbValue <= 9) && (cbColor <= 2)) || ((cbValue >= 1) && (cbValue <= 7) && (cbColor == 3)));
+}
+
 int SRAnalysis::getKeAndShun(const unsigned char _cardIndex[]) {
 	// 不修改原值
 	BYTE cbCardIndex[MAX_INDEX] = {};

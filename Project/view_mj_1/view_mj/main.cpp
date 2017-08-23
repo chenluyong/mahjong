@@ -1,14 +1,13 @@
-#include "srmainwidget.h"
+#include "srmainwindow.h"
 #include <QApplication>
+#include <QDebug>
+#include "control/srmahjongwidget.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    SRMainWidget w;
+    SRMainWindow w;
     w.show();
-
-
-
-
 
     return a.exec();
 }

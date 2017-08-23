@@ -10,7 +10,6 @@ SRMahjong::SRMahjong(unsigned char cardData[], unsigned char cardCount) {
 	memset(cardIndex_, 0, sizeof(cardIndex_));
 	memset(cardData_, 0, sizeof(cardData_));
 	cardCount_ = cardCount;
-	index_ = 0;
 	
 	lastTouchCard_ = 0;
 
@@ -31,6 +30,11 @@ SRMahjong::SRMahjong(unsigned char cardData[], unsigned char cardCount) {
 SRMahjong::~SRMahjong() {
 }
 
+
+unsigned char SRMahjong::have(unsigned char card) {
+	return cardIndex_[SRAnalysis::switchToCardIndex(card)];
+}
+
 void SRMahjong::sort(void) {
 	for (int i = 0; i < cardCount_; ++i) {
 		int idx = SRAnalysis::switchToCardIndex(cardData_[i]);
@@ -40,7 +44,7 @@ void SRMahjong::sort(void) {
 	}
 }
 
-unsigned char SRMahjong::size(void) const
+unsigned char SRMahjong::length(void) const
 {
 	return (unsigned char)strlen((char*)cardData_);
 }
@@ -49,14 +53,18 @@ void SRMahjong::addCard(unsigned char card)
 {
 	cardData_[MAX_COUNT] = card;
 	lastTouchCard_ = card;
+	sort();
 }
 
 void SRMahjong::delCard(unsigned char card)
 {
+	// 这里还需要单步调试一下
 	auto c = std::find(cardData_, cardData_ + MAX_COUNT, card);
 
 	if (c != nullptr)
 		*c = 0;
+
+	sort();
 }
 
 

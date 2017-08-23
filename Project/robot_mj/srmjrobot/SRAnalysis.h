@@ -30,10 +30,12 @@ public:
 
 	static int isWin(const unsigned char* data, unsigned char count);
 
+	static bool isValidCard(unsigned char cbCardData);
 
 protected:
 
 	static int isWin(const unsigned char _cardIndex[], int _duiIndex = 0);
+
 
 	static int getKeAndShun(const unsigned char _cardIndex[]);
 

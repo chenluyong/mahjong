@@ -1,25 +1,25 @@
 #include "srcommon.h"
 
-BYTE sr::convertCard(QString card)
-{
-//    card.at()
-    switch (card) {
-    case 0x00:
-        name = QStringLiteral(" 万");
-        break;
-    case 0x10:
-        name = QStringLiteral(" 条");
-        break;
-    case 0x20:
-        name = QStringLiteral(" 同");
-        break;
-    case 0x30:
-        name = QStringLiteral(" 风");
-        break;
-    default:
-        break;
-    }
-}
+//BYTE sr::convertCard(QString card)
+//{
+////    card.at()
+//    switch (card) {
+//    case 0x00:
+//        name = QStringLiteral(" 万");
+//        break;
+//    case 0x10:
+//        name = QStringLiteral(" 条");
+//        break;
+//    case 0x20:
+//        name = QStringLiteral(" 同");
+//        break;
+//    case 0x30:
+//        name = QStringLiteral(" 风");
+//        break;
+//    default:
+//        break;
+//    }
+//}
 
 
 QString sr::convertCard(BYTE card)

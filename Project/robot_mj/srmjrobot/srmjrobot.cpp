@@ -9,17 +9,8 @@
 
 
 SRRobot::SRRobot(void) {
-	// 数据初始化
-	isTing_ = -1;
-	memset(arrTing_, 0, sizeof(arrTing_));
-	numTing_ = 0;
-
-	invisibleMahjongPool_ = nullptr;
-	visibleMahjongPool_ = nullptr;
-
-	direction_ = enDirection::None;
-	for (int i = 0; i < sizeof(mahjong_) / sizeof(mahjong_[0]); ++i)
-		mahjong_[i] = nullptr;
+	reset();
+	std::cout << "hello robot!" << std::endl;
 }
 
 SRRobot::~SRRobot(void) {
@@ -40,6 +31,8 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	// 数据校验
 	if (out_card == nullptr || out_card_count == nullptr)
 		return -87;
+
+	// 检查角色自身
 	SRMahjong* pmj = nullptr;
 	if (direction_ != enDirection::None)
 		pmj = mahjong_[direction_];
@@ -47,7 +40,7 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 		return -1;
 
 	// 判断自摸
-	if (SRAnalysis::isWin(pmj->data(), pmj->size())) {
+	if (SRAnalysis::isWin(pmj->data(), pmj->length())) {
 		return WIK_CHI_HU;
 	}
 
@@ -57,13 +50,72 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	memset(temp_discard, 0, sizeof(temp_discard));
 	// 听牌算法
 	if (isTing_ > 0 || (isTing_ = SRAnalysis::isTing(pmj->data(), 
-		pmj->size(), temp_discard, arrTing_, &numTing_)) > 0) {
-		// 检查所听牌型场上情况
-		// 检查是否在牌堆中
-		// invisibleMahjongPool_->find()
-		// 检查是否在玩家手中
+		pmj->length(), temp_discard, arrTing_, &numTing_)) > 0) {
+		// 检查所听牌型场上情况	
+		for (int i = 0; i < numTing_; ++i) {
+			// 检验数组
+			if (arrTing_[i] == 0)
+				continue;
 
-		// 若不在牌墙，且在玩家手上已成顺刻牌型，则考虑换听牌。
+			// 检查可查
+			if (invisibleMahjongPool_ == nullptr) {
+				// 查看麻将是否在牌墙之上
+				int pool_idx = invisibleMahjongPool_->find(arrTing_[i]);
+
+				if (pool_idx < 0) {
+					// 不在牌墙之上，检测是否在牌池之中
+					//visibleMahjongPool_->find(arrTing_[i]);
+
+					// 检查玩家手中是否存有主角所听的牌
+					for (int i = 0; i < numTing_; ++i) {
+
+						// 检测是否在玩家手中
+						for (int player = enDirection::South; player <= enDirection::East; ++player) {
+
+							// 检查可查
+							if (mahjong_[player] == nullptr)
+								continue;
+
+							if (0 < mahjong_[player]->have(arrTing_[i])) {
+								// 检测他是否成将或成顺刻
+								if (false) {
+									arrTing_[i] = 0;
+								}
+								else {
+									break;
+								}
+							}
+						}
+					}
+				}
+
+			}
+			else {
+				// 检查牌池之中有几张可听牌型
+				int num = visibleMahjongPool_->have(arrTing_[i]);
+				num += pmj->have(arrTing_[i]);
+				if (num == 4) {
+					// 无法胡牌
+				}
+			}
+			
+			
+		}
+
+		// 检查是否已成死牌
+		{
+			int temp_die = 0;
+			for (int i = 0; i < numTing_; ++i)
+				if (arrTing_[i] == 0)
+					++temp_die;
+
+			if (temp_die == numTing_) {
+				// 说明已经无牌可听，现在以不点炮为主
+			}
+		}
+		
+		
+			
 
 
 		*out_card = temp_discard[0];
@@ -78,7 +130,7 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	do {
 		// 有杠先杠
 		for (unsigned char i = 0, s = 0; i < MAX_INDEX; ++i) {
-			s = pmj->getIndex(i);
+			s = pmj->index(i);
 			if (s == 4) {
 				// 检测若在听牌的情况下，如果杠了 是否还能听牌, 杠了是不是牌型会变的更差
 				int i = 0;
@@ -130,14 +182,18 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	} while (false);
 
 	// 删除打出的牌
-	for (int i = 0; i < *out_card_count; ++i)
+	for (int i = 0; i < (*out_card_count); ++i)
 		pmj->delCard(*out_card);
 
 	return WIK_NULL;
 }
 
 int SRRobot::getAction(enDirection drc, unsigned char card) {
+	// 检验参数
+	if (!SRAnalysis::isValidCard(card) || drc == enDirection::None)
+		return -87;
 
+	// 配备主角
 	SRMahjong* pmj = nullptr;
 	if (direction_ != enDirection::None)
 		pmj = mahjong_[direction_];
@@ -145,13 +201,47 @@ int SRRobot::getAction(enDirection drc, unsigned char card) {
 	if (pmj == nullptr)
 		return -1;
 
-	if (0 == SRAnalysis::isWin(pmj->data(), pmj->size())) {
+	// 检验可胡
+	SRMahjong temp_mj(*pmj);
+	temp_mj.addCard(card);
+
+	if (0 == SRAnalysis::isWin(temp_mj.data(), temp_mj.length())) {
 		return WIK_CHI_HU;
 	}
 
-	// 四川麻将判断碰、杠
-
+	// 检验碰杠（四川麻将只有碰杠）
+	for (unsigned char i = 0; i < MAX_INDEX; ++i) {
+		if (pmj->index(i) == 3) {
+			// 杠牌逻辑分析
+			return WIK_GANG;
+		}
+		else if (pmj->index(i) == 2) {
+			// 碰牌逻辑分析
+			return WIK_PENG;
+		}
+	}
 	return WIK_NULL;
+}
+
+void SRRobot::reset(void) {	
+	// 主角方位
+	direction_ = enDirection::None;
+
+	// 牌池中的麻将
+	visibleMahjongPool_ = nullptr;
+	// 牌墙上的麻将
+	invisibleMahjongPool_ = nullptr;
+
+	// 所有方位的麻将
+	for (int i = 0; i < sizeof(mahjong_) / sizeof(mahjong_[0]); ++i)
+		mahjong_[i] = nullptr;
+
+	// 牌型是否可听
+	isTing_ = -1;
+	// 听的牌
+	memset(arrTing_, 0, sizeof(arrTing_));
+	// 可听的数量
+	numTing_ = 0;
 }
 
 void SRRobot::setDirection(enDirection drc) {
@@ -181,3 +271,4 @@ const SRMahjong * SRRobot::getMahjong(enDirection drc) const {
 void SRRobot::setMahjong(enDirection drc, SRMahjong * mahjong) {
 	mahjong_[drc] = mahjong;
 }
+

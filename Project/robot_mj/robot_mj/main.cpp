@@ -17,8 +17,10 @@ using namespace std;
 
 int main(void) {
 
+
 	SRRobot* robot = new SRRobot();
 
+	
 
 
 	//cout << robot->getName().c_str();
