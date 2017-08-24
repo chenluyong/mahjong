@@ -15,19 +15,21 @@
 #include <iostream>
 
 class SRMahjong;
-class SRMahjongPool;
+class SRVisibleMahjongPool;
+class SRInvisibleMahjongPool;
+
+enum enDirection {
+	None = -1,
+	South = 0,              //南向 下
+	West,					//西向 左
+	North,                  //北向 上
+	East,					//东向 右
+};
 
 class SRMJROBOT_API SRRobot {
 
 public:
 
-	enum enDirection {
-		None = -1,
-		South = 0,              //南向 下
-		West,					//西向 左
-		North,                  //北向 上
-		East,					//东向 右
-	};
 
 	SRRobot(void);
 	virtual ~SRRobot(void);
@@ -58,8 +60,8 @@ public:
 	enDirection getDirection(void) const;
 
 	// 设置牌局
-	void setVisibleMahjongPool(SRMahjongPool* pool);
-	void setInvisibleMahjongPool(SRMahjongPool* pool);
+	void setVisibleMahjongPool(SRVisibleMahjongPool* pool);
+	void setInvisibleMahjongPool(SRInvisibleMahjongPool* pool);
 
 	// 设置麻将										  
 	const SRMahjong* getMahjong(void) const;
@@ -74,9 +76,9 @@ private:
 	enDirection direction_;
 
 	// 牌池中的麻将
-	SRMahjongPool* visibleMahjongPool_;
+	SRVisibleMahjongPool* visibleMahjongPool_;
 	// 牌墙上的麻将
-	SRMahjongPool* invisibleMahjongPool_;
+	SRInvisibleMahjongPool* invisibleMahjongPool_;
 
 	// 所有方位的麻将
 	SRMahjong* mahjong_[5];
