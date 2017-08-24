@@ -49,12 +49,60 @@ unsigned char SRMahjongPool::have(unsigned char card_data) const
 	return num;
 }
 
-unsigned char SRMahjongPool::pop_front(void)
+
+
+
+
+
+
+
+
+///////////////////////SRInvisibleMahjongPool////////////////////////
+
+
+
+
+
+unsigned char SRInvisibleMahjongPool::pop_front(void)
 {
 	return cardData_[indexBegin_++];
 }
 
-unsigned char SRMahjongPool::pop_back(void)
+unsigned char SRInvisibleMahjongPool::pop_back(void)
 {
 	return cardData_[indexEnd_--];
+}
+
+int SRInvisibleMahjongPool::setMahjongPoolData(const unsigned char * _data, unsigned char size)
+{
+	if (_data == nullptr)
+		return -87;
+
+
+	const int& temp_size = sizeof(cardData_);
+	memset(cardData_, 0, temp_size);
+	int ret = 0;
+
+	if (size > temp_size) {
+		size = temp_size;
+		ret = -87;
+	}
+
+	memcpy(cardData_, _data, size);
+
+	return ret;
+}
+
+
+
+
+///////////////////////SRVisibleMahjongPool////////////////////////
+
+
+
+
+
+void SRVisibleMahjongPool::push_back(unsigned char data)
+{
+	cardData_[indexBegin_++] = data;
 }

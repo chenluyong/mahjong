@@ -12,19 +12,13 @@
 #define SRMJROBOT_API __declspec(dllimport)
 #endif
 
+#include "srmjglobal.h"
 #include <iostream>
 
 class SRMahjong;
 class SRVisibleMahjongPool;
 class SRInvisibleMahjongPool;
 
-enum enDirection {
-	None = -1,
-	South = 0,              //南向 下
-	West,					//西向 左
-	North,                  //北向 上
-	East,					//东向 右
-};
 
 class SRMJROBOT_API SRRobot {
 
@@ -38,7 +32,7 @@ public:
 
 	// 摸牌
 	// direction : 摸牌的方向，前摸牌:0，后摸牌:1。  默认为0
-	virtual int touchCard(int direction = 0);
+	virtual int touchCard(unsigned char card);
 	
 	// 出牌
 	// out_card : 出牌的数据

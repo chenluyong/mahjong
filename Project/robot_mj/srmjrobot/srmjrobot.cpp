@@ -16,14 +16,14 @@ SRRobot::SRRobot(void) {
 SRRobot::~SRRobot(void) {
 }
 
-int SRRobot::touchCard(int direction) {
+int SRRobot::touchCard(unsigned char card) {
 	SRMahjong* pmj = mahjong_[direction_];
 
-	if (invisibleMahjongPool_ == nullptr || pmj == nullptr)
+	if (pmj == nullptr)
 		return -1;
 
 	// ÃþÅÆ
-	pmj->addCard(invisibleMahjongPool_->pop_front());
+	pmj->addCard(card);
 	return 0;
 }
 
@@ -248,15 +248,15 @@ void SRRobot::setDirection(enDirection drc) {
 	direction_ = drc;
 }
 
-SRRobot::enDirection SRRobot::getDirection(void) const {
+enDirection SRRobot::getDirection(void) const {
 	return direction_;
 }
 
-void SRRobot::setVisibleMahjongPool(SRMahjongPool * pool) {
+void SRRobot::setVisibleMahjongPool(SRVisibleMahjongPool * pool) {
 	visibleMahjongPool_ = pool;
 }
 
-void SRRobot::setInvisibleMahjongPool(SRMahjongPool * pool) {
+void SRRobot::setInvisibleMahjongPool(SRInvisibleMahjongPool * pool) {
 	invisibleMahjongPool_ = pool;
 }
 
