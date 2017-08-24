@@ -13,23 +13,21 @@
 SRMainWindow::SRMainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    // 初始化基础框架
-    setMinimumSize(1000,1000);
-    initMenu();
 
     // 设置中心窗口
     mahjongTable_ = new SRMahjongTableWidget();
     setCentralWidget(mahjongTable_);
+
+    // 初始化基础框架
+    setMinimumSize(1000,1000);
+    initMenu();
+
 }
 
 SRMainWindow::~SRMainWindow()
 {
 }
 
-void SRMainWindow::open()
-{
-    qDebug() << "Game Start.";
-}
 
 void SRMainWindow::initMenu()
 {
@@ -38,7 +36,7 @@ void SRMainWindow::initMenu()
     openAction->setStatusTip(tr("Game Start."));
     openAction->setIcon(QIcon(":/images/UI_UI_BMP_FILE_SELECTOR_DISABLED_DIRECTORY.png"));
 
-    connect(openAction,SIGNAL(triggered()),this,SLOT(open()));
+    connect(openAction,SIGNAL(triggered()),mahjongTable_,SLOT(onOpen()));
 
     QLabel* msgLabel = new QLabel;
     msgLabel->setMaximumSize(msgLabel->sizeHint());

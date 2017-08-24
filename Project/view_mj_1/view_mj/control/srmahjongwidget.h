@@ -11,9 +11,18 @@ public:
 
 public:
 
+    unsigned char getCardData(void) {return cardData_;}
+
+public:
+
     bool operator< (const SRMahjongWidget& other);
     bool operator> (const SRMahjongWidget& other);
     bool operator==(const SRMahjongWidget& other);
+
+
+public:
+
+    static QString convertToText(unsigned char data);
 
 signals:
 
@@ -21,6 +30,7 @@ signals:
     void sigDoubleClick(QWidget*);
 
 public slots:
+
     void onModifyData(unsigned char data);
 
 protected:
@@ -30,7 +40,6 @@ protected:
 private:
 
 
-    QString convertToText(unsigned char data);
 
 private:
 

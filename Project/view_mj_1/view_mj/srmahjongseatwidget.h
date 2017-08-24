@@ -1,33 +1,44 @@
 #ifndef SRMAHJONGSEATWIDGET_H
 #define SRMAHJONGSEATWIDGET_H
-
+#include "srmjglobal.h"
 #include <QList>
 #include <QWidget>
 
 class SRMahjongWidget;
-
+class SRRobot;
+class SRMahjong;
 class SRMahjongSeatWidget : public QWidget
 {
     Q_OBJECT
 public:
 
-    enum enDirection {
-        South = 0,              //南向 下
-        West,					//西向 左
-        North,                  //北向 上
-        East,					//东向 右
-    };
 
     explicit SRMahjongSeatWidget(QWidget *parent = nullptr);
 
-signals:
+    void setRobot(SRRobot* robot);
 
+    void setMahjong(SRMahjong* mahjong);
+
+signals:
+    // 出牌信号
+    void sigOutCard(enDirection direction, unsigned char data);
+
+    // 胡
+    void sigAction(enDirection direction, int action);
 public:
 
     void setDirection(enDirection drc);
+    enDirection getDirection(void) {return direction_;}
 
 public slots:
 
+    // 摸牌
+    void onTouchCard(unsigned char *data, unsigned char count);
+
+private slots:
+
+    // 被双击 - 出牌的意思
+    void onMahjongKnockout(QWidget* object);
 
 protected:
 
@@ -42,6 +53,10 @@ private:
     enDirection direction_;
 
     QList<SRMahjongWidget*> listMahjong_;
+
+    SRRobot* robot_;
+
+    SRMahjong * mahjong_;
 
 };
 

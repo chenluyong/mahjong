@@ -1,20 +1,47 @@
 #include "srmahjongseatwidget.h"
 #include "control/srmahjongwidget.h"
+
 #include <QDebug>
 #include <QBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
+
+#include <srmjrobot.h>
+#include <SRMahjong.h>
+
 SRMahjongSeatWidget::SRMahjongSeatWidget(QWidget *parent) : QWidget(parent)
 {
     setStyleSheet("QWidget{background-color:green;}" \
                   "QWidget:hover{border: 1px solid red;}");
 
-    for(int i = 0; i < 13; ++i)
-        listMahjong_.push_back(new SRMahjongWidget());
+    for(int i = 0; i < 13; ++i) {
+        SRMahjongWidget* temp = new SRMahjongWidget();
+        listMahjong_.push_back(temp);
 
+        connect(temp,SIGNAL(sigDoubleClick(QWidget*)),
+                this,SLOT(onMahjongKnockout(QWidget*)));
+    }
 }
 
-void SRMahjongSeatWidget::setDirection(SRMahjongSeatWidget::enDirection drc)
+void SRMahjongSeatWidget::setRobot(SRRobot *robot)
+{
+    robot_ = robot;
+    if (robot_ != nullptr) {
+        robot_->setDirection(direction_);
+    }
+//    if (mahjong_ != nullptr && robot_ != nullptr) {
+//    }
+//        robot->setMahjong(direction_, mahjong_);
+}
+
+void SRMahjongSeatWidget::setMahjong(SRMahjong *mahjong)
+{
+    mahjong_ = mahjong;
+    if (robot_ != nullptr)
+        robot_->setMahjong(direction_, mahjong_);
+}
+
+void SRMahjongSeatWidget::setDirection(enDirection drc)
 {
     direction_ = drc;
     QBoxLayout * layout;
@@ -44,6 +71,25 @@ void SRMahjongSeatWidget::setDirection(SRMahjongSeatWidget::enDirection drc)
 
     setLayout(layout);
 
+
+}
+
+void SRMahjongSeatWidget::onTouchCard(unsigned char *data, unsigned char count)
+{
+    Q_UNUSED(count);
+    robot_->touchCard(*data);
+}
+
+void SRMahjongSeatWidget::onMahjongKnockout(QWidget *object)
+{
+    SRMahjongWidget * temp_object = qobject_cast<SRMahjongWidget*>(object);
+
+    if (temp_object == nullptr) {
+        qDebug() << __FUNCTION__ << "convert widget error.";
+        return ;
+    }
+
+    // 打出这张牌
 
 }
 

@@ -15,7 +15,6 @@ public:
     ~SRMainWindow();
 
 public slots:
-    void open(void);
 
 private:
     void initMenu(void);
