@@ -24,16 +24,24 @@ signals:
     void sigOutCard(enDirection direction, unsigned char data);
 
     // 胡
-    void sigAction(enDirection direction, int action);
+    void sigHu(enDirection direction);
+
+    // 其他行为 左吃 中吃 右吃 碰 杠
+    void sigAction(enDirection direction, int action, BYTE data);
 public:
 
     void setDirection(enDirection drc);
     enDirection getDirection(void) {return direction_;}
 
-public slots:
 
     // 摸牌
-    void onTouchCard(unsigned char *data, unsigned char count);
+    void touchCard(unsigned char data);
+
+public slots:
+
+
+    // 玩家出牌
+    void onPlayerOutCard(unsigned char data);
 
 private slots:
 
@@ -46,7 +54,7 @@ protected:
 
 private:
 
-
+    void upMahjongBox(void);
 
 private:
     // 一个位子应该具备方向

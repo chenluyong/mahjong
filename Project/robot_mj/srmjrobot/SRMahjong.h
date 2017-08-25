@@ -9,6 +9,9 @@
 
 #include "srmjglobal.h"
 
+
+SRMJROBOT_API bool isValidCard(unsigned char cbCardData);
+
 class SRMJROBOT_API SRMahjong
 {
 public:
@@ -20,6 +23,8 @@ public:
 	unsigned char have(unsigned char card);
 	
 	void sort(void);
+
+	void upCardIndex(void);
 
 	const unsigned char* data(void) const { return cardData_; }
 

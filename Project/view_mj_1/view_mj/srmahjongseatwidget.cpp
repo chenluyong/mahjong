@@ -14,7 +14,11 @@ SRMahjongSeatWidget::SRMahjongSeatWidget(QWidget *parent) : QWidget(parent)
     setStyleSheet("QWidget{background-color:green;}" \
                   "QWidget:hover{border: 1px solid red;}");
 
-    for(int i = 0; i < 13; ++i) {
+    direction_ = enDirection::None;
+    mahjong_ = nullptr;
+    robot_ = nullptr;
+
+    for(int i = 0; i < 14; ++i) {
         SRMahjongWidget* temp = new SRMahjongWidget();
         listMahjong_.push_back(temp);
 
@@ -29,9 +33,6 @@ void SRMahjongSeatWidget::setRobot(SRRobot *robot)
     if (robot_ != nullptr) {
         robot_->setDirection(direction_);
     }
-//    if (mahjong_ != nullptr && robot_ != nullptr) {
-//    }
-//        robot->setMahjong(direction_, mahjong_);
 }
 
 void SRMahjongSeatWidget::setMahjong(SRMahjong *mahjong)
@@ -39,10 +40,15 @@ void SRMahjongSeatWidget::setMahjong(SRMahjong *mahjong)
     mahjong_ = mahjong;
     if (robot_ != nullptr)
         robot_->setMahjong(direction_, mahjong_);
+
+    upMahjongBox();
 }
 
 void SRMahjongSeatWidget::setDirection(enDirection drc)
 {
+    if (direction_ != enDirection::None)
+        qDebug() << __FUNCTION__ << "double set seat direction";
+
     direction_ = drc;
     QBoxLayout * layout;
 
@@ -74,10 +80,54 @@ void SRMahjongSeatWidget::setDirection(enDirection drc)
 
 }
 
-void SRMahjongSeatWidget::onTouchCard(unsigned char *data, unsigned char count)
+void SRMahjongSeatWidget::onPlayerOutCard(unsigned char data)
 {
-    Q_UNUSED(count);
-    robot_->touchCard(*data);
+    int ret_action = robot_->getAction(direction_,data);
+
+    if (ret_action == WIK_GANG || ret_action == WIK_PENG) {
+        emit sigAction(direction_,ret_action,data);
+    }
+    else if (ret_action == WIK_CHI_HU) {
+        emit sigHu(direction_);
+    }
+
+    return;
+
+}
+
+void SRMahjongSeatWidget::touchCard(unsigned char data)
+{
+    robot_->touchCard(data);
+
+    unsigned char out_card[MAX_COUNT] = {};
+    unsigned char card_size = 0;
+    int ret_action = robot_->getOutCard(out_card,&card_size);
+
+    if (ret_action == WIK_NULL) {
+        emit sigOutCard(direction_,out_card[0]);
+    }
+    else if (ret_action == WIK_CHI_HU) {
+        emit sigHu(direction_);
+        setStyleSheet("QWidget{background-color:red;}" \
+                      "QWidget:hover{border: 1px solid green;}");
+        return;
+    }
+    else {
+        emit sigAction(direction_,ret_action,out_card[0]);
+    }
+
+    // 删除计划打出的牌
+    for (auto item : listMahjong_) {
+        if (card_size == 0)
+            break;
+        if (item->getCardData() == out_card[0]) {
+            item->onModifyData(0);
+            --card_size;
+        }
+    }
+
+    upMahjongBox();
+
 }
 
 void SRMahjongSeatWidget::onMahjongKnockout(QWidget *object)
@@ -90,6 +140,10 @@ void SRMahjongSeatWidget::onMahjongKnockout(QWidget *object)
     }
 
     // 打出这张牌
+    emit sigOutCard(direction_,temp_object->getCardData());
+    temp_object->onModifyData(0);
+
+    upMahjongBox();
 
 }
 
@@ -103,6 +157,23 @@ void SRMahjongSeatWidget::paintEvent(QPaintEvent *event)
 
     style()->drawPrimitive(QStyle::PE_Widget,
                            &opt, &p, this);
+
+
+}
+
+void SRMahjongSeatWidget::upMahjongBox()
+{
+    if (mahjong_ == nullptr) {
+        qDebug() << "error: mahjong is null!";
+        return;
+    }
+    mahjong_->sort();
+    const unsigned char* pmj_data = mahjong_->data();
+
+    for (auto item : listMahjong_) {
+        item->onModifyData(*pmj_data++);
+    }
+
 
 }
 

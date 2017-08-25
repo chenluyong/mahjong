@@ -11,6 +11,8 @@
 
 #include <srmjglobal.h>
 #include <srmjrobot.h>
+#include <SRMahjong.h>
+#include <SRMahjongPool.h>
 
 
 SRMahjongTableWidget::SRMahjongTableWidget(QWidget *parent) : QWidget(parent)
@@ -24,6 +26,10 @@ SRMahjongTableWidget::SRMahjongTableWidget(QWidget *parent) : QWidget(parent)
         robot_[i] = new SRRobot();
         seatWidget_[i]->setDirection((enDirection)i);
         seatWidget_[i]->setRobot(robot_[i]);
+
+        // 链接玩家吃碰胡行为信号
+        connect(seatWidget_[i],SIGNAL(sigAction(enDirection, int, BYTE)),
+                this,SLOT(onPlayerAction(enDirection, int, BYTE)));
     }
 
     // 初始化座位与牌桌的布局
@@ -33,6 +39,8 @@ SRMahjongTableWidget::SRMahjongTableWidget(QWidget *parent) : QWidget(parent)
     connect(hallWidget_,SIGNAL(sigDealCard(enDirection,BYTE)),
             this,SLOT(onDealCard(enDirection,BYTE)));
 
+//    connect(this,SIGNAL(sigDealCard(enDirection,BYTE)),
+//            )
 
 }
 
@@ -41,31 +49,41 @@ void SRMahjongTableWidget::onOpen() {
     hallWidget_->onShuffle();
 
     // 发牌
-    SRInvisibleMahjongPool* temp = hallWidget_->getInvisibleMahjongPool();
-    SRVisibleMahjongPool* temp2 = hallWidget_->getVisibleMahjongPool();
-    for(int i = 0; i < 4; ++i) {
-        robot_[i]->setInvisibleMahjongPool(temp);
-        robot_[i]->setVisibleMahjongPool(temp2);
+    SRInvisibleMahjongPool* invisible_pool = hallWidget_->getInvisibleMahjongPool();
+    SRVisibleMahjongPool* visible_pool = hallWidget_->getVisibleMahjongPool();
+    for(int drc = (int)enDirection::South; drc <= enDirection::East; ++drc) {
+        robot_[drc]->setInvisibleMahjongPool(invisible_pool);
+        robot_[drc]->setVisibleMahjongPool(visible_pool);
+
+        // 初始化麻将数据
+        unsigned char temp_card_data[MAX_COUNT] = {};
+        for (int i = 0; i < 13; ++i)
+            temp_card_data[i] = invisible_pool->pop_front();
+
+        SRMahjong* temp_mj = new SRMahjong(temp_card_data, 13);
+
+        // 将麻将设置到对象上
+        robot_[drc]->setMahjong((enDirection)drc, temp_mj);
+        seatWidget_[drc]->setMahjong(temp_mj);
     }
-    hallWidget_->onDealCard(enDirection::South,13);
-    hallWidget_->onDealCard(enDirection::West,13);
-    hallWidget_->onDealCard(enDirection::North,13);
-    hallWidget_->onDealCard(enDirection::East,13);
 
     // 用户摸牌
     hallWidget_->onDealCard(enDirection::South,1);
 
     // 请求用户打牌
+    emit sigAskPlayerOutCard(enDirection::South);
 
 }
 
-void SRMahjongTableWidget::onPlayerAction(enDirection direction, int action) {
+void SRMahjongTableWidget::onPlayerAction(enDirection direction, int action, BYTE data)
+{
 
 }
+
 
 void SRMahjongTableWidget::onDealCard(enDirection direction, BYTE data)
 {
-    seatWidget_[direction]->onTouchCard(&data, 1);
+    seatWidget_[direction]->touchCard(data);
 }
 
 void SRMahjongTableWidget::paintEvent(QPaintEvent *event) {
@@ -76,6 +94,10 @@ void SRMahjongTableWidget::paintEvent(QPaintEvent *event) {
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget,
                            &opt, &p, this);
+
+    // 更新子界面
+    for (auto seat : seatWidget_)
+        seat->update();
 }
 
 

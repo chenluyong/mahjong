@@ -26,7 +26,7 @@ signals:
     void sigDealCard(enDirection direction, BYTE data);
 
     // 玩家出牌
-    void sigOutCard(enDirection direction, BYTE *data, BYTE count);
+    void sigOutCard(enDirection direction, BYTE data);
 
 public slots:
 
@@ -38,7 +38,7 @@ public slots:
     void onDealCard(enDirection direction, BYTE count);
 
     // 用户出牌，牌插入牌池之中
-    void onOutCardToVisibleMahjongPool(unsigned char card);
+    void onOutCardToVisibleMahjongPool(enDirection direction, unsigned char card);
 
 
 protected:

@@ -17,6 +17,9 @@ SRMahjongHallWidget::SRMahjongHallWidget(QWidget *parent) : QWidget(parent)
     invisibleMahjongPool_ = new SRInvisibleMahjongPool();
     visibleMahjongPool_ = new SRVisibleMahjongPool();
 
+
+
+
 }
 
 void SRMahjongHallWidget::paintEvent(QPaintEvent *event)
@@ -62,12 +65,13 @@ void SRMahjongHallWidget::onShuffle() {
 
 void SRMahjongHallWidget::onDealCard(enDirection direction, BYTE count)
 {
-    for (BYTE i = 0; i < count; ++i) {
+    for (BYTE i = 0; i < count; ++i)
         emit sigDealCard(direction, invisibleMahjongPool_->pop_front());
-    }
 }
 
-void SRMahjongHallWidget::onOutCardToVisibleMahjongPool(unsigned char card)
+void SRMahjongHallWidget::onOutCardToVisibleMahjongPool(enDirection direction,
+                                                        unsigned char card)
 {
     visibleMahjongPool_->push_back(card);
+    emit sigOutCard(direction,card);
 }

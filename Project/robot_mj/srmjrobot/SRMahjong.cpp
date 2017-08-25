@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include <algorithm>
 
 
 
@@ -36,6 +37,12 @@ unsigned char SRMahjong::have(unsigned char card) {
 }
 
 void SRMahjong::sort(void) {
+	std::sort(cardData_, cardData_ + MAX_COUNT);
+}
+
+void SRMahjong::upCardIndex(void)
+{
+	memset(cardIndex_, 0, sizeof(cardIndex_));
 	for (int i = 0; i < cardCount_; ++i) {
 		int idx = SRAnalysis::switchToCardIndex(cardData_[i]);
 		// ·ÀÖ¹idxÏÂ±êÎª-1
@@ -53,7 +60,9 @@ void SRMahjong::addCard(unsigned char card)
 {
 	cardData_[MAX_COUNT] = card;
 	lastTouchCard_ = card;
-	sort();
+
+	this->sort();
+	this->upCardIndex();
 }
 
 void SRMahjong::delCard(unsigned char card)
@@ -64,7 +73,8 @@ void SRMahjong::delCard(unsigned char card)
 	if (c != nullptr)
 		*c = 0;
 
-	sort();
+	this->sort();
+	this->upCardIndex();
 }
 
 
@@ -150,4 +160,9 @@ int SRMahjong::getIntervalTwo(int _indexBegin) const {
 	}
 
 	return 0;
+}
+
+bool isValidCard(unsigned char cbCardData)
+{
+	return SRAnalysis::isValidCard(cbCardData);
 }
