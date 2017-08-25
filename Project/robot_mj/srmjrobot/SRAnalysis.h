@@ -18,7 +18,6 @@ public:
 
 public:
 
-
 	//ÆË¿Ë×ª»»
 	static unsigned char switchToCardIndex(unsigned char cbCardData);
 
@@ -39,8 +38,9 @@ protected:
 
 	static int getKeAndShun(const unsigned char _cardIndex[]);
 
-private:
+	static int isAllKeAndShun(const unsigned char _cardIndex[]);
 
+private:
 
 };
 

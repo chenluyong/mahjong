@@ -69,6 +69,8 @@ private:
 
 	int isWin(const BYTE _cardIndex[], int _duiIndex);
 
+	int isAllKeAndShun(const BYTE _cardIndex[]);
+
 private:
 	BYTE cardIndex_[MAX_INDEX];
 

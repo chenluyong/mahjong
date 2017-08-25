@@ -27,7 +27,7 @@ signals:
     void sigHu(enDirection direction);
 
     // 其他行为 左吃 中吃 右吃 碰 杠
-    void sigAction(enDirection direction, int action, BYTE data);
+    void sigAction(enDirection direction, int action, unsigned char data);
 public:
 
     void setDirection(enDirection drc);
@@ -41,7 +41,7 @@ public slots:
 
 
     // 玩家出牌
-    void onPlayerOutCard(unsigned char data);
+    void onPlayerOutCard(enDirection drc, unsigned char data);
 
 private slots:
 

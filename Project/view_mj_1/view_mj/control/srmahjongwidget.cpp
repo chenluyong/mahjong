@@ -12,6 +12,7 @@ SRMahjongWidget::SRMahjongWidget(QWidget *parent)
                   "QWidget:hover{border: 3px solid black;}");
 
     setMaximumSize(55,74);
+    cardData_ = 0;
 }
 
 bool SRMahjongWidget::operator<(const SRMahjongWidget &other)

@@ -40,7 +40,7 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 		return -1;
 
 	// 判断自摸
-	if (SRAnalysis::isWin(pmj->data(), pmj->length())) {
+	if (0 == SRAnalysis::isWin(pmj->data(), pmj->length())) {
 		return WIK_CHI_HU;
 	}
 
@@ -144,6 +144,30 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 				return WIK_GANG;
 			}
 		}
+		// 有单独的风牌则打风牌
+		std::vector<int> vec_index;
+		for (int idx = 0; (idx = pmj->getFanPaiOne(idx)) != 0;) {
+			vec_index.push_back(idx++);
+		}
+		if (!vec_index.empty()) {
+			// 这里可以复杂一点
+			for (int i = 0; i < 4; ++i) {
+				if (mahjong_[i] == nullptr && i != (int)direction_)
+					continue;
+
+				// 风有好几张，先打别人能碰的，以达到快速切牌的效果
+				for (auto idx : vec_index) {
+					if (2 <= mahjong_[i]->have(idx)) {
+						vec_index.clear();
+						vec_index.push_back(idx);
+					}
+				}
+			}
+				
+			*out_card = SRAnalysis::switchToCardData(vec_index.front());
+			*out_card_count = 1;
+			break;
+		}
 
 		// 获得所有孤立2个空位的不连续单牌
 		int index = pmj->getIntervalTwo();
@@ -155,7 +179,7 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 
 
 		// 获得所有可供打出的不连续单张
-		std::vector<int> vec_index;
+		vec_index.clear();
 		for (index = 0; (index = pmj->getIntervalOne(index)) != 0;) {
 			vec_index.push_back(index);
 		}

@@ -80,12 +80,16 @@ void SRMahjongSeatWidget::setDirection(enDirection drc)
 
 }
 
-void SRMahjongSeatWidget::onPlayerOutCard(unsigned char data)
+void SRMahjongSeatWidget::onPlayerOutCard(enDirection drc, unsigned char data)
 {
-    int ret_action = robot_->getAction(direction_,data);
+    // 若自己打出则不分析
+    if (drc == direction_)
+        return;
+
+    int ret_action = robot_->getAction(drc,data);
 
     if (ret_action == WIK_GANG || ret_action == WIK_PENG) {
-        emit sigAction(direction_,ret_action,data);
+        emit sigAction(direction_, ret_action, data);
     }
     else if (ret_action == WIK_CHI_HU) {
         emit sigHu(direction_);
@@ -98,35 +102,37 @@ void SRMahjongSeatWidget::onPlayerOutCard(unsigned char data)
 void SRMahjongSeatWidget::touchCard(unsigned char data)
 {
     robot_->touchCard(data);
+    upMahjongBox();
 
     unsigned char out_card[MAX_COUNT] = {};
     unsigned char card_size = 0;
     int ret_action = robot_->getOutCard(out_card,&card_size);
 
-    if (ret_action == WIK_NULL) {
-        emit sigOutCard(direction_,out_card[0]);
-    }
-    else if (ret_action == WIK_CHI_HU) {
-        emit sigHu(direction_);
-        setStyleSheet("QWidget{background-color:red;}" \
-                      "QWidget:hover{border: 1px solid green;}");
-        return;
-    }
-    else {
-        emit sigAction(direction_,ret_action,out_card[0]);
-    }
+//    if (ret_action == WIK_NULL) {
+//        emit sigOutCard(direction_,out_card[0]);
+//    }
+//    else if (ret_action == WIK_CHI_HU) {
+//        emit sigHu(direction_);
+//        setStyleSheet("QWidget{background-color:red;}" \
+//                      "QWidget:hover{border: 1px solid green;}");
+//        return;
+//    }
+//    else {
+//        emit sigAction(direction_,ret_action,out_card[0]);
+//    }
 
     // 删除计划打出的牌
     for (auto item : listMahjong_) {
         if (card_size == 0)
             break;
         if (item->getCardData() == out_card[0]) {
-            item->onModifyData(0);
+            item->setStyleSheet("QWidget{background-color:red;}" \
+                       "QWidget:hover{border: 1px solid black;}");
             --card_size;
         }
     }
 
-    upMahjongBox();
+//    upMahjongBox();
 
 }
 
@@ -134,12 +140,13 @@ void SRMahjongSeatWidget::onMahjongKnockout(QWidget *object)
 {
     SRMahjongWidget * temp_object = qobject_cast<SRMahjongWidget*>(object);
 
-    if (temp_object == nullptr) {
+    if (temp_object == nullptr || mahjong_ == nullptr) {
         qDebug() << __FUNCTION__ << "convert widget error.";
         return ;
     }
 
     // 打出这张牌
+    mahjong_->delCard(temp_object->getCardData());
     emit sigOutCard(direction_,temp_object->getCardData());
     temp_object->onModifyData(0);
 

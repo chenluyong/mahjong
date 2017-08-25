@@ -24,9 +24,9 @@ public slots:
     void onOpen(void);
 
     // Íæ¼ÒÐÐÎª £¨³Ô ºú Åö£©
-    void onPlayerAction(enDirection direction, int action, BYTE data);
+    void onPlayerAction(enDirection direction, int action, unsigned char data);
 
-    void onDealCard(enDirection direction, BYTE data);
+    void onDealCard(enDirection direction, unsigned char data);
 
 protected:
 

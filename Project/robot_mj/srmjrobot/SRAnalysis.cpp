@@ -17,16 +17,14 @@ int SRAnalysis::isWin(const unsigned char * data, unsigned char count) {
 	if ((count < 2) || (count > MAX_COUNT) || ((count - 2) % 3 != 0))
 		return -1;
 
-	unsigned char card_index[MAX_INDEX];
+	unsigned char card_index[MAX_INDEX] = {};
 
 	// 数据转换为索引模式(如果数据有误，可能会造成数组越界)
 	for (int i = 0; i < count; ++i)
 		card_index[switchToCardIndex(data[i])]++;
 			   
 
-	isWin(card_index);
-
-	return 0;
+	return isWin(card_index);
 }
 
 
@@ -55,7 +53,7 @@ int SRAnalysis::isWin(const unsigned char _cardIndex[], int _duiIndex)
 			card_index[i] -= 2;
 
 			// 开始判定刻顺数量
-			if (MAX_WEAVE == getKeAndShun(card_index))
+			if (0 == isAllKeAndShun(card_index))
 				return 0;
 			else
 				return isWin(_cardIndex, ++_duiIndex);
@@ -108,6 +106,40 @@ int SRAnalysis::getKeAndShun(const unsigned char _cardIndex[]) {
 	return cbKindItemCount;
 }
 
+
+int SRAnalysis::isAllKeAndShun(const unsigned char _cardIndex[]) {
+	// 不修改原值
+	BYTE cbCardIndex[MAX_INDEX] = {};
+	memcpy(cbCardIndex, _cardIndex, sizeof(_cardIndex[0])* MAX_INDEX);
+
+
+	// 拆分分析
+	for (BYTE i = 0; i < MAX_INDEX; i++) {
+		//同牌判断
+		if (cbCardIndex[i] == 3) {
+			cbCardIndex[i] -= 3;
+		}
+		// 连牌判断
+		else if ((i<(MAX_INDEX - 9)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
+			for (; 1 <= cbCardIndex[i];) {
+				// 顺子的牌
+				if ((cbCardIndex[i + 1] >= 1) && (cbCardIndex[i + 2] >= 1)) {
+					cbCardIndex[i] -= 1;
+					cbCardIndex[i + 1] -= 1;
+					cbCardIndex[i + 2] -= 1;
+				}
+				else
+					break;
+			}
+
+		}
+	}
+	int card_count = 0;
+	for (auto item : cbCardIndex) {
+		card_count += item;
+	}
+	return card_count;
+}
 unsigned char SRAnalysis::switchToCardIndex(unsigned char cbCardData) {
 	return ((cbCardData&MASK_COLOR) >> 4) * 9 + (cbCardData&MASK_VALUE) - 1;
 }

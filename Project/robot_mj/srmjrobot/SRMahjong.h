@@ -28,7 +28,7 @@ public:
 
 	const unsigned char* data(void) const { return cardData_; }
 
-	unsigned char length(void) const;
+	unsigned char length(void);
 
 	void addCard(unsigned char card);
 
@@ -46,7 +46,8 @@ public:
 public:
 
 	// 获得一张孤立的番牌
-	int getFanPaiOne(int _indexBegin) const;
+	int getFanPaiOne(int _indexBegin = 0) const;
+
 
 	// 获得间隔1个空位的不连续单牌，从两头向中间排查
 	int getIntervalOne(int _indexBegin = 0) const;
@@ -62,7 +63,7 @@ protected:
 	// 麻将的索引数据
 	unsigned char cardIndex_[MAX_INDEX];
 
-	unsigned char cardData_[MAX_COUNT + 1];
+	unsigned char cardData_[MAX_COUNT];
 	unsigned char cardCount_;
 
 	// 最后一张摸的牌

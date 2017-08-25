@@ -28,19 +28,27 @@ SRMahjongTableWidget::SRMahjongTableWidget(QWidget *parent) : QWidget(parent)
         seatWidget_[i]->setRobot(robot_[i]);
 
         // 链接玩家吃碰胡行为信号
-        connect(seatWidget_[i],SIGNAL(sigAction(enDirection, int, BYTE)),
-                this,SLOT(onPlayerAction(enDirection, int, BYTE)));
+        connect(seatWidget_[i],SIGNAL(sigAction(enDirection, int, unsigned char)),
+                this,SLOT(onPlayerAction(enDirection, int, unsigned char)));
+
+        connect(seatWidget_[i],SIGNAL(sigOutCard(enDirection,unsigned char)),
+                hallWidget_,SLOT(onOutCardToVisibleMahjongPool(
+                                     enDirection,unsigned char)));
+        connect(seatWidget_[i],SIGNAL(sigOutCard(enDirection,unsigned char)),
+                hallWidget_,SIGNAL(sigOutCard(enDirection,unsigned char)));
+
+        connect(hallWidget_,SIGNAL(sigOutCard(enDirection,unsigned char)),
+                seatWidget_[i],SLOT(onPlayerOutCard(enDirection,unsigned char)));
+
     }
 
     // 初始化座位与牌桌的布局
     initSeatLayout();
 
 
-    connect(hallWidget_,SIGNAL(sigDealCard(enDirection,BYTE)),
-            this,SLOT(onDealCard(enDirection,BYTE)));
+    connect(hallWidget_,SIGNAL(sigDealCard(enDirection, unsigned char)),
+            this,SLOT(onDealCard(enDirection, unsigned char)));
 
-//    connect(this,SIGNAL(sigDealCard(enDirection,BYTE)),
-//            )
 
 }
 
@@ -75,13 +83,13 @@ void SRMahjongTableWidget::onOpen() {
 
 }
 
-void SRMahjongTableWidget::onPlayerAction(enDirection direction, int action, BYTE data)
+void SRMahjongTableWidget::onPlayerAction(enDirection direction, int action, unsigned char data)
 {
 
 }
 
 
-void SRMahjongTableWidget::onDealCard(enDirection direction, BYTE data)
+void SRMahjongTableWidget::onDealCard(enDirection direction, unsigned char data)
 {
     seatWidget_[direction]->touchCard(data);
 }

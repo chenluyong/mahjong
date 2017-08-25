@@ -23,10 +23,10 @@ public:
 
 signals:
     // ·¢ÅÆ
-    void sigDealCard(enDirection direction, BYTE data);
+    void sigDealCard(enDirection direction, unsigned char data);
 
     // Íæ¼Ò³öÅÆ
-    void sigOutCard(enDirection direction, BYTE data);
+    void sigOutCard(enDirection direction, unsigned char data);
 
 public slots:
 
