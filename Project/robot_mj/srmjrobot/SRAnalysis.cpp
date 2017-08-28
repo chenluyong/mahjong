@@ -166,25 +166,24 @@ int SRAnalysis::isTing(const unsigned char * data, unsigned char count, unsigned
 	// 听牌分析
 	int ret = -1;
 	for (unsigned char idx = 0; idx < MAX_INDEX; ++idx) {
-		if (card_index[idx] > 0)
-			--card_index[idx];
-		else
-			continue;
+		if (card_index[idx] == 0)
+
+		--card_index[idx];
 		
 		for (unsigned char i = 0; i < MAX_INDEX; ++i) {
 			++card_index[i];
 
 			if (0 == isWin(card_index)) {
 				ret = 0;
-				// 这里还需要优化 会出现 要听A张 可出 B 或 C 的情况
+				// ![遗留]这里还需要优化 会出现 要听A张 可出 B 或 C 的情况 [123 234 33 5 7 9]
 				if (out_data != nullptr) {
-					*out_data = switchToCardIndex(i);
+					*out_data = switchToCardData(i);
 					++out_data;
 				}
 				if (out_count != nullptr)
 					(*out_count)++;
 
-				*out_discard = switchToCardIndex(idx);
+				*out_discard = switchToCardData(idx);
 				++out_discard;
 			}
 

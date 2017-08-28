@@ -48,7 +48,6 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	// 听牌分析
 	unsigned char temp_discard[MAX_COUNT];
 	memset(temp_discard, 0, sizeof(temp_discard));
-	// 听牌算法
 	if (isTing_ > 0 || (isTing_ = SRAnalysis::isTing(pmj->data(), 
 		pmj->length(), temp_discard, arrTing_, &numTing_)) > 0) {
 		// 检查所听牌型场上情况	
@@ -144,63 +143,129 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 				return WIK_GANG;
 			}
 		}
-		// 有单独的风牌则打风牌
-		std::vector<int> vec_index;
-		for (int idx = 0; (idx = pmj->getFanPaiOne(idx)) != 0;) {
-			vec_index.push_back(idx++);
-		}
-		if (!vec_index.empty()) {
-			// 这里可以复杂一点
-			for (int i = 0; i < 4; ++i) {
-				if (mahjong_[i] == nullptr && i != (int)direction_)
-					continue;
 
-				// 风有好几张，先打别人能碰的，以达到快速切牌的效果
-				for (auto idx : vec_index) {
-					if (2 <= mahjong_[i]->have(idx)) {
-						vec_index.clear();
-						vec_index.push_back(idx);
+
+		//// 有单独的风牌则打风牌
+		std::vector<int> vec_index;
+		//{
+		//	for (int idx = 0; (idx = pmj->getFanPaiOne(idx)) != -1;++idx) {
+		//		vec_index.push_back(idx);
+		//	}
+		//	if (!vec_index.empty()) {
+		//		int i = rand() % vec_index.size();
+		//		int temp = vec_index.at(i);
+		//		// 这里可以复杂一点
+		//		for (int i = 0; i < 4; ++i) {
+		//			if (mahjong_[i] == nullptr && i != (int)direction_)
+		//				continue;
+
+		//			// 风有好几张，先打别人能碰的，以达到快速切牌的效果
+		//			for (auto idx : vec_index) {
+		//				if (2 <= mahjong_[i]->have(idx)) {
+		//					temp = idx;
+		//				}
+		//			}
+		//		}
+
+		//		*out_card = SRAnalysis::switchToCardData(temp);
+		//		*out_card_count = 1;
+		//		break;
+		//	}
+		//}
+
+		// 获得所有孤立2个空位的不连续单牌  [122334 7] 
+		//{
+
+		//	vec_index.clear();
+		//	for (int idx = 0; (idx = pmj->getIntervalTwo(idx)) != -1;++idx) {
+		//		if (pmj->index((unsigned char)idx) >= 2) {
+		//			// 判断是否唯一将牌
+		//			continue;
+		//		}
+		//		vec_index.push_back(idx);
+		//	}
+		//	if (!vec_index.empty()) {
+		//		int i = rand() % vec_index.size();
+		//		int temp_index = vec_index.at(i);
+
+		//		// 遍历检查幺九牌型
+		//		for (auto x : vec_index) {
+		//			const int& temp = x % 9;
+		//			if (temp <= 1 || temp >= 7) {
+		//				temp_index = x;
+		//				break;
+		//			}
+		//		}
+
+		//		*out_card = SRAnalysis::switchToCardData(temp_index);
+		//		*out_card_count = 1;
+		//		break;
+		//	}
+
+		//}
+
+		
+
+
+		// 获得所有可供打出的不连续单张 [1 3 567]   
+		//{
+		//	vec_index.clear();
+		//	for (int idx = 0; (idx = pmj->getIntervalOne(idx)) != -1;++idx) {
+		//		if (pmj->index((unsigned char)idx) >= 2) {
+		//			// 判断是否唯一将牌
+		//			continue;
+		//		}
+		//		vec_index.push_back(idx);
+		//	}
+		//	// 检查是否有单牌可出
+		//	if (!vec_index.empty()) {
+		//		// ![遗留] 确定这个单牌不是将牌及其以上，或这不是唯一将牌
+
+		//		int i = rand() % vec_index.size();
+		//		int temp_index = vec_index.at(i);
+		//		// 遍历检查幺九牌型
+		//		for (auto x : vec_index) {
+		//			const int& temp = x % 9;
+		//			if (temp <= 1 || temp >= 7) {
+		//				temp_index = x;
+		//				break;
+		//			}
+		//		}
+		//		*out_card = SRAnalysis::switchToCardData(temp_index);
+		//		*out_card_count = 1;
+		//		break;
+		//	}
+		//}
+
+
+		// 拆掉 1233 1223  7789 这样的将牌,成为无将可听型
+		{
+			vec_index.clear();
+			for (int idx = 0; (idx = pmj->getShunDopant(idx)) != -1; ++idx) {
+				vec_index.push_back(idx);
+			}
+			// 检查是否有牌可出
+			if (!vec_index.empty()) {
+				int i = rand() % vec_index.size();
+				int temp_index = vec_index.at(i);
+				// 遍历检查幺九牌型
+				for (auto x : vec_index) {
+					const int& temp = x % 9;
+					if (temp <= 1 || temp >= 7) {
+						temp_index = x;
+						break;
 					}
 				}
+				*out_card = SRAnalysis::switchToCardData(temp_index);
+				*out_card_count = 1;
+				break;
 			}
-				
-			*out_card = SRAnalysis::switchToCardData(vec_index.front());
-			*out_card_count = 1;
-			break;
+			
 		}
 
-		// 获得所有孤立2个空位的不连续单牌
-		int index = pmj->getIntervalTwo();
-		if (index > 0) {
-			*out_card = SRAnalysis::switchToCardData(index);
-			*out_card_count = 1;
-			break;
-		}
-
-
-		// 获得所有可供打出的不连续单张
-		vec_index.clear();
-		for (index = 0; (index = pmj->getIntervalOne(index)) != 0;) {
-			vec_index.push_back(index);
-		}
-		// 检查是否有单牌可出
-		if (!vec_index.empty()) {
-			// 遍历检查幺九牌型
-			for (auto x : vec_index) {
-				x %= 9;
-				if (x <= 2 || x >= 7) {
-					index = x;
-					break;
-				}
-			}
-			*out_card = SRAnalysis::switchToCardData(index);
-			*out_card_count = 1;
-			break;
-		}
 
 
 		// 若函数进行到这里，说明牌型比较复杂了，需要加入权重概念进行深度分析
-
 		*out_card = pmj->getLastTouchCard();
 		*out_card_count = 1;
 	} while (false);

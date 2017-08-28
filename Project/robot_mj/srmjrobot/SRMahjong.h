@@ -41,7 +41,7 @@ public:
 public:
 
 	unsigned char operator[] (const int &idx) { return cardIndex_[idx]; }
-	unsigned char index(unsigned char& idx) { return cardIndex_[idx]; }
+	unsigned char index(const unsigned char& idx) { return cardIndex_[idx]; }
 	 
 public:
 
@@ -49,15 +49,23 @@ public:
 	int getFanPaiOne(int _indexBegin = 0) const;
 
 
-	// 获得间隔1个空位的不连续单牌，从两头向中间排查
+	// 获得间隔1个空位的不连续牌，从两头向中间排查
 	int getIntervalOne(int _indexBegin = 0) const;
 
-	// 获得间隔2个空位的不连续单牌，从两头向中间排查
+	// 获得间隔2个空位的不连续牌，从两头向中间排查
 	int getIntervalTwo(int _indexBegin = 0) const;
 
+	// 1123  5667 5677
+	int getShunDopant(int _indexBegin = 0) const;
+private:
+
+	struct stTeamKind {
+		unsigned char kind;
+		unsigned char card[3];
+		unsigned char eye;
+	};
 
 protected:
-
 
 
 	// 麻将的索引数据
