@@ -60,6 +60,7 @@ void SRMahjongTableWidget::onOpen() {
     SRInvisibleMahjongPool* invisible_pool = hallWidget_->getInvisibleMahjongPool();
     SRVisibleMahjongPool* visible_pool = hallWidget_->getVisibleMahjongPool();
     for(int drc = (int)enDirection::South; drc <= enDirection::East; ++drc) {
+        robot_[drc]->reset();
         robot_[drc]->setInvisibleMahjongPool(invisible_pool);
         robot_[drc]->setVisibleMahjongPool(visible_pool);
 
@@ -73,6 +74,16 @@ void SRMahjongTableWidget::onOpen() {
         // 将麻将设置到对象上
         robot_[drc]->setMahjong((enDirection)drc, temp_mj);
         seatWidget_[drc]->setMahjong(temp_mj);
+        seatWidget_[drc]->setHallWidget(hallWidget_);
+    }
+
+    for(int i = (int)enDirection::South; i <= (int)enDirection::East; ++i) {
+        for(int s = (int)enDirection::South; s <= (int)enDirection::East; ++s) {
+            if (i == s)
+                continue;
+            robot_[i]->setMahjong((enDirection)s,robot_[s]->getMahjong());
+        }
+
     }
 
     // 用户摸牌
@@ -85,6 +96,14 @@ void SRMahjongTableWidget::onOpen() {
 
 void SRMahjongTableWidget::onPlayerAction(enDirection direction, int action, unsigned char data)
 {
+    if (action == WIK_GANG) {
+        SRInvisibleMahjongPool* invisible_pool = hallWidget_->getInvisibleMahjongPool();
+        robot_[direction]->touchCard(invisible_pool->pop_back());
+        seatWidget_[direction]->upMahjongBox();
+    }
+    else if (action == WIK_PENG) {
+        emit sigAskPlayerOutCard(direction);
+    }
 
 }
 

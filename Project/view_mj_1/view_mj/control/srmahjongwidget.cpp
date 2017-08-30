@@ -3,6 +3,7 @@
 #include <QStyleOption>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QPixmap>
 
 #include <SRMahjong.h>
 
@@ -13,6 +14,18 @@ SRMahjongWidget::SRMahjongWidget(QWidget *parent)
 
     setMaximumSize(55,74);
     cardData_ = 0;
+    pen_ = new QPen(QColor(0,174,255),3);
+
+    //  链式动画图标分离
+    QPixmap temp_pix(":/ico/mahjong");
+    const int& IMAGE_COUNT = 35;
+    for(int i = 0; i != IMAGE_COUNT; ++i) {
+        listPix_.append(temp_pix.copy(i * (temp_pix.width() / IMAGE_COUNT), 0,
+                        temp_pix.width() / IMAGE_COUNT, temp_pix.height()));
+    }
+
+    currentPix_ = listPix_.at(34);
+    this->setGeometry(0,0,currentPix_.width(),currentPix_.height());
 }
 
 bool SRMahjongWidget::operator<(const SRMahjongWidget &other)
@@ -31,10 +44,21 @@ bool SRMahjongWidget::operator==(const SRMahjongWidget &other)
 }
 
 
+unsigned char switchToCardIndex(unsigned char cbCardData) {
+    return ((cbCardData&MASK_COLOR) >> 4) * 9 + (cbCardData&MASK_VALUE) - 1;
+}
+
+
 void SRMahjongWidget::onModifyData(unsigned char data)
 {
     cardData_ = data;
-    info_ = convertToText(data);
+
+    if (data == 0)
+        currentPix_ = listPix_.at(34);
+    if (switchToCardIndex(data) < 35)
+        currentPix_ = listPix_.at(switchToCardIndex(data));
+
+//    info_ = convertToText(data);
 }
 
 void SRMahjongWidget::paintEvent(QPaintEvent *event)
@@ -46,15 +70,38 @@ void SRMahjongWidget::paintEvent(QPaintEvent *event)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget,
                            &opt, &p, this);
+    p.drawPixmap(rect(), currentPix_);
+
+    /// 绘制边框线
+    p.setPen(*pen_);
+    p.drawRect(rect());
 
     p.drawText(0,0,width(),height(),Qt::AlignCenter,info_);
 
 
 }
 
+void SRMahjongWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+
+}
+
+void SRMahjongWidget::enterEvent(QEvent *event)
+{
+    pen_->setColor(QColor(255,0,0));
+}
+
+void SRMahjongWidget::leaveEvent(QEvent *event)
+{
+    pen_->setColor(QColor(0,0,0,0));
+}
+
 void SRMahjongWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
+        setStyleSheet("QWidget{background-color:orange;}" \
+                      "QWidget:hover{border: 3px solid black;}");
         emit sigDoubleClick(this);
         qDebug() <<  info_ << QStringLiteral("被双击");
     }
@@ -108,4 +155,9 @@ QString SRMahjongWidget::convertToText(unsigned char data)
     name = QString::number(card_num) + name;
 
     return name;
+}
+
+void SRMahjongWidget::setPen(QPen *pen)
+{
+    *pen_ = *pen;
 }

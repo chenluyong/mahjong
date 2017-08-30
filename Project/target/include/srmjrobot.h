@@ -38,6 +38,8 @@ public:
 	// out_card : 出牌的数据
 	// out_card_count : 出牌的张数
 	virtual int getOutCard(unsigned char* out_card, unsigned char* out_card_count);
+	virtual int analysisOutCard(unsigned char* out_card, unsigned char* out_card_count);
+	virtual int analysisCard(unsigned char* out_card, unsigned char* out_card_count);
 
 	// 询问动作
 	// card : 是其他牌桌打出的牌
@@ -58,7 +60,7 @@ public:
 	void setInvisibleMahjongPool(SRInvisibleMahjongPool* pool);
 
 	// 设置麻将										  
-	const SRMahjong* getMahjong(void) const;
+	SRMahjong* getMahjong(void);
 	const SRMahjong* getMahjong(enDirection drc) const;
 	void setMahjong(enDirection drc, SRMahjong* mahjong);
 

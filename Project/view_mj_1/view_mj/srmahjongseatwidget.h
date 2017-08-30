@@ -3,10 +3,13 @@
 #include "srmjglobal.h"
 #include <QList>
 #include <QWidget>
-
+class QPushButton;
 class SRMahjongWidget;
+class SRMahjongHallWidget;
+
 class SRRobot;
 class SRMahjong;
+
 class SRMahjongSeatWidget : public QWidget
 {
     Q_OBJECT
@@ -18,6 +21,8 @@ public:
     void setRobot(SRRobot* robot);
 
     void setMahjong(SRMahjong* mahjong);
+
+    void setHallWidget(SRMahjongHallWidget* hall) {hallWidget_ = hall;}
 
 signals:
     // 出牌信号
@@ -37,6 +42,7 @@ public:
     // 摸牌
     void touchCard(unsigned char data);
 
+    void upMahjongBox(void);
 public slots:
 
 
@@ -48,24 +54,33 @@ private slots:
     // 被双击 - 出牌的意思
     void onMahjongKnockout(QWidget* object);
 
+    void onTouchCard(void);
+    void onAnalysisOutCard(void);
+    void onAnalysisCard(void);
+
 protected:
 
     virtual void paintEvent(QPaintEvent *event);
 
-private:
 
-    void upMahjongBox(void);
 
 private:
+    SRMahjongHallWidget* hallWidget_;
+
     // 一个位子应该具备方向
     enDirection direction_;
 
     QList<SRMahjongWidget*> listMahjong_;
 
+    unsigned char lastOutCard_;
+
     SRRobot* robot_;
 
     SRMahjong * mahjong_;
 
+    QPushButton* touchCard_;
+    QPushButton* analysisOutCard_;
+    QPushButton* analysisCard_;
 };
 
 #endif // SRMAHJONGSEATWIDGET_H

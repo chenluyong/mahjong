@@ -8,8 +8,9 @@ typedef unsigned char BYTE;
 
 // 常量定义
 #define MAX_WEAVE					4									//最大组合
-#define MAX_INDEX					34									//最大索引
-#define MAX_COUNT					13									//最大数目
+#define MAX_FAN						4									//最大组合
+#define MAX_INDEX					31									//最大索引
+#define MAX_COUNT					14									//最大数目
 #define MAX_REPERTORY				124									//最大库存
 
 #define	MASK_COLOR					0xF0								//花色掩码

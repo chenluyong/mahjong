@@ -88,7 +88,7 @@ int SRAnalysis::getKeAndShun(const unsigned char _cardIndex[]) {
 			cbCardIndex[i] -= 3;
 		}
 		// 连牌判断
-		else if ((i<(MAX_INDEX - 9)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
+		else if ((i<(MAX_INDEX - 4)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
 			for (; 1 <= cbCardIndex[i];) {
 				// 顺子的牌
 				if ((cbCardIndex[i + 1] >= 1) && (cbCardIndex[i + 2] >= 1)) {
@@ -120,7 +120,7 @@ int SRAnalysis::isAllKeAndShun(const unsigned char _cardIndex[]) {
 			cbCardIndex[i] -= 3;
 		}
 		// 连牌判断
-		else if ((i<(MAX_INDEX - 9)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
+		else if ((i<(MAX_INDEX - 4)) && (cbCardIndex[i]>0) && ((i % 9)<7)) {
 			for (; 1 <= cbCardIndex[i];) {
 				// 顺子的牌
 				if ((cbCardIndex[i + 1] >= 1) && (cbCardIndex[i + 2] >= 1)) {
@@ -167,6 +167,7 @@ int SRAnalysis::isTing(const unsigned char * data, unsigned char count, unsigned
 	int ret = -1;
 	for (unsigned char idx = 0; idx < MAX_INDEX; ++idx) {
 		if (card_index[idx] == 0)
+			continue;
 
 		--card_index[idx];
 		
@@ -174,7 +175,7 @@ int SRAnalysis::isTing(const unsigned char * data, unsigned char count, unsigned
 			++card_index[i];
 
 			if (0 == isWin(card_index)) {
-				ret = 0;
+				ret = 1;
 				// ![遗留]这里还需要优化 会出现 要听A张 可出 B 或 C 的情况 [123 234 33 5 7 9]
 				if (out_data != nullptr) {
 					*out_data = switchToCardData(i);
