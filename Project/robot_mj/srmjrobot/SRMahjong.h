@@ -62,13 +62,10 @@ public:
 	int getDanDui(int _indexBegin = 0) const;
 
 	int getNotShunKe(int _indexBegin = 0) const;
+
+	
 private:
 
-	struct stTeamKind {
-		unsigned char kind;
-		unsigned char card[4];
-		unsigned char eye;
-	};
 
 protected:
 

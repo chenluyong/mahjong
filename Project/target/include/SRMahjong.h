@@ -57,13 +57,15 @@ public:
 
 	// 1123  5667 5677
 	int getShunDopant(int _indexBegin = 0) const;
+
+	// 112  899  233
+	int getDanDui(int _indexBegin = 0) const;
+
+	int getNotShunKe(int _indexBegin = 0) const;
+
+	
 private:
 
-	struct stTeamKind {
-		unsigned char kind;
-		unsigned char card[3];
-		unsigned char eye;
-	};
 
 protected:
 

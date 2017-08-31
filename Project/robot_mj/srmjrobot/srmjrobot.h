@@ -38,6 +38,7 @@ public:
 	// out_card : 出牌的数据
 	// out_card_count : 出牌的张数
 	virtual int getOutCard(unsigned char* out_card, unsigned char* out_card_count);
+	virtual int getNewOutCard(unsigned char* out_card, unsigned char* out_card_count);
 	virtual int analysisOutCard(unsigned char* out_card, unsigned char* out_card_count);
 	virtual int analysisCard(unsigned char* out_card, unsigned char* out_card_count);
 
@@ -78,6 +79,9 @@ private:
 
 	// 所有方位的麻将
 	SRMahjong* mahjong_[5];
+
+	// 牌局轮次
+	int roundNumber_;
 
 	// 牌型是否可听
 	int isTing_;

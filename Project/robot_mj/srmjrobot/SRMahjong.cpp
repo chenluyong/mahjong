@@ -145,30 +145,30 @@ int SRMahjong::getIntervalOne(int _indexBegin) const {
 
 int SRMahjong::getIntervalTwo(int _indexBegin) const {
 
-for (int i = _indexBegin / 9; i < 3; ++i) {
-	const int& INDEX_BEGIN = (i * 9 > _indexBegin) ? i * 9 : _indexBegin;
-	const int& INDEX_END = i * 9 + 9;
-	for (int index_begin = INDEX_BEGIN; index_begin < INDEX_END; ++index_begin) {
-		// 没有牌 或者 牌在指定的范围之前 都选择跳过
-		if (cardIndex_[index_begin] == 0)
-			continue;
+	for (int i = _indexBegin / 9; i < 3; ++i) {
+		const int& INDEX_BEGIN = (i * 9 > _indexBegin) ? i * 9 : _indexBegin;
+		const int& INDEX_END = i * 9 + 9;
+		for (int index_begin = INDEX_BEGIN; index_begin < INDEX_END; ++index_begin) {
+			// 没有牌 或者 牌在指定的范围之前 都选择跳过
+			if (cardIndex_[index_begin] == 0)
+				continue;
 
-		const int& arg1 = index_begin - 1, &arg2 = index_begin - 2;
-		const int& arg3 = index_begin + 1, &arg4 = index_begin + 2;
+			const int& arg1 = index_begin - 1, &arg2 = index_begin - 2;
+			const int& arg3 = index_begin + 1, &arg4 = index_begin + 2;
 
-		// 判断相邻
-		if ((arg1 >= INDEX_BEGIN && cardIndex_[arg1] > 0)
-			|| (arg2 >= INDEX_BEGIN && cardIndex_[arg2] > 0)
-			|| (arg3 < INDEX_END && cardIndex_[arg3] > 0)
-			|| (arg4 < INDEX_END && cardIndex_[arg4] > 0)) {
-			continue;
+			// 判断相邻
+			if ((arg1 >= INDEX_BEGIN && cardIndex_[arg1] > 0)
+				|| (arg2 >= INDEX_BEGIN && cardIndex_[arg2] > 0)
+				|| (arg3 < INDEX_END && cardIndex_[arg3] > 0)
+				|| (arg4 < INDEX_END && cardIndex_[arg4] > 0)) {
+				continue;
+			}
+
+			// 不连续的牌
+			return index_begin;
 		}
-
-		// 不连续的牌
-		return index_begin;
 	}
-}
-return -1;
+	return -1;
 }
 
 int SRMahjong::getShunDopant(int _indexBegin) const {

@@ -29,6 +29,7 @@ SRRobot::SRRobot(void) {
 	memset(arrTing_, 0, sizeof(arrTing_));
 	// 可听的数量
 	numTing_ = 0;
+	roundNumber_ = 0;
 }
 
 SRRobot::~SRRobot(void) {
@@ -220,7 +221,7 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 
 				// 快速切牌判断
 				for (int i = 0; i < 4; ++i) {
-					if (mahjong_[i] == nullptr && i != (int)direction_)
+					if (mahjong_[i] == nullptr && i == (int)direction_)
 						continue;
 
 					// 风有好几张，先打别人能碰的，以达到快速切牌的效果
@@ -400,8 +401,237 @@ int SRRobot::getOutCard(unsigned char * out_card, unsigned char * out_card_count
 	return WIK_NULL;
 }
 
+int SRRobot::getNewOutCard(unsigned char * out_card, unsigned char * out_card_count) {
+	// 数据校验
+	if (out_card == nullptr || out_card_count == nullptr)
+		return -87;
+
+
+	// 检查角色自身
+	SRMahjong* pmj = nullptr;
+	if (direction_ != enDirection::None)
+		pmj = mahjong_[direction_];
+	if (pmj == nullptr)
+		return -1;
+
+	pmj->upCardIndex();
+	srand((unsigned int)time(0));
+
+
+
+	// 判断自摸
+	if (0 == SRAnalysis::isWin(pmj->data(), pmj->length())) {
+		return WIK_CHI_HU;
+	}
+
+
+	int ret = WIK_NULL;
+
+	// 判听
+	unsigned char temp_discard[MAX_COUNT];
+	memset(temp_discard, 0, sizeof(temp_discard));
+	if (isTing_ > 0 || (isTing_ = SRAnalysis::isTing(pmj->data(),
+		pmj->length(), temp_discard, arrTing_, &numTing_)) > 0) {
+
+		*out_card = SRAnalysis::switchToCardData(temp_discard[0]);
+		*out_card_count = 1;
+		ret = WIK_LISTEN;
+	}
+
+
+	// 分析
+	do {
+
+		
+		// 有杠先杠
+		{
+			for (unsigned char i = 0, s = 0; i < MAX_INDEX; ++i) {
+				s = pmj->index(i);
+				if (s == 4) {
+					// 检测若在听牌的情况下，如果杠了 是否还能听牌, 杠了是不是牌型会变的更差
+					int i = 0;
+
+					*out_card = SRAnalysis::switchToCardData(s);
+					*out_card_count = 4;
+
+
+					return WIK_GANG;
+				}
+			}
+		}
+		
+
+		// 有单独的风牌则打风牌
+		{	   
+			std::vector<int> vec_index;
+			for (int idx = 0; (idx = pmj->getFanPaiOne(idx)) != -1; ++idx) {
+				vec_index.push_back(idx);
+			}
+			if (!vec_index.empty()) {
+				int i = rand() % vec_index.size();
+				int temp = vec_index.at(i);
+				// 快速切牌判断
+				for (int i = 0; i < 4; ++i) {
+					if (mahjong_[i] == nullptr && i == (int)direction_)
+						continue;
+
+					// 风有好几张，先打别人能碰的，以达到快速切牌的效果
+					for (auto idx : vec_index) {
+						if (2 <= mahjong_[i]->have(SRAnalysis::switchToCardData(idx))) {
+							temp = idx;
+						}
+					}
+				}
+
+				*out_card = SRAnalysis::switchToCardData(temp);
+				*out_card_count = 1;
+				break;
+			}
+		}
+
+
+		// 分析花牌
+		{
+			// 获得牌型
+			unsigned char card_index[MAX_INDEX] = {};
+			for (int i = 0; i < MAX_INDEX; ++i)
+				card_index[i] = pmj->index(i);
+
+			
+			// 开始分析
+			{
+				std::vector<int> vec_index;
+
+				// 牌型解析
+				{
+					for (int i = 0; i < 3; ++i) {
+						// 存放下标的数组
+						unsigned char temp_card_index[MAX_COUNT] = {};
+						char temp_count = 0;
+						// 分析当前区间的花牌
+						SRAnalysis::analysisHuaPai(&card_index[i * 9], &card_index[i * 9 + 9],
+							temp_card_index, &temp_count);
+
+						// 将花牌的下标存入容器
+						for (int n = 0; n < temp_count; ++n)
+							vec_index.push_back((temp_card_index[n] + i * 9));
+					}
+				}
+
+
+				// 分析最佳出牌
+				{
+					if (!vec_index.empty()) {
+						int temp_i = rand() % vec_index.size();
+						int temp_index = vec_index.at(temp_i);
+
+
+						// 转移连牌 如 12  34 此类
+						std::vector<int> vec_shun_index;
+						{
+							for (int i = 0; i < vec_index.size(); ++i) {
+								// 若下标[i+1] 与 下标 [i] 相邻，则转移
+								if (i != 0 && 
+									vec_index.at(i - 1) + 1 == vec_index.at(i)) {
+									vec_shun_index.push_back(vec_index.at(i));
+									vec_shun_index.push_back(vec_index.at(i - 1));
+									vec_index.erase(vec_index.begin() + i);
+									vec_index.erase(vec_index.begin() + i - 1);
+								}
+							}
+							// 默认出 12  34 顺牌
+							if (!vec_shun_index.empty()) {
+								temp_index = vec_shun_index.at(rand() % vec_shun_index.size());
+							}
+						}
+
+						// 转移将牌
+						std::vector<int> vec_double_index;
+						{
+							for (auto iter = vec_index.begin();
+								iter != vec_index.end();) {
+
+								if (2 <= pmj->index(*iter)) {
+									vec_double_index.push_back(*iter);
+									iter = vec_index.erase(iter);
+								}
+								else {
+									++iter;
+								}
+							}
+							// 若将牌不是唯一且，没有散顺可出，则默认出将牌
+							if (vec_double_index.size() > 1 && vec_shun_index.empty())
+								temp_index = vec_double_index.at(
+									rand() % vec_double_index.size());
+						}
+						
+
+						// 如果还有单牌，则默认出单牌
+						if (!vec_index.empty()) {
+							temp_index = vec_index.at(
+								rand() % vec_index.size());
+						}
+
+						// 判断快速切牌
+						if (roundNumber_ <= 6 && roundNumber_ >= 0) {
+							// 快速切牌判断
+							int sign_index = 0;
+							for (int i = (int)enDirection::South;
+								i <= (int)enDirection::East; ++i) {
+								if (mahjong_[i] == nullptr || i == (int)direction_)
+									continue;
+
+								// 查看玩家拥有的牌型
+								for (auto idx : vec_index) {
+									if (2 == mahjong_[i]->have(SRAnalysis::switchToCardData(idx))) {
+										sign_index = idx;
+									}
+								}
+							}
+							// 判断是否有附和切牌标准的牌型
+							if (sign_index != 0 && temp_index != sign_index) {
+								(*out_card) = SRAnalysis::switchToCardData(sign_index);
+								(*out_card_count) = 1;
+								break;
+							}
+						} // end 快速切牌判断结束
+
+						  // 遍历检查幺九牌型
+						for (auto x : vec_index) {
+							const int& temp = x % 9;
+							if (temp <= 1 || temp >= 7) {
+								temp_index = x;
+								break;
+							}
+						}
+
+
+						
+						(*out_card) = SRAnalysis::switchToCardData(temp_index);
+						(*out_card_count) = 1;
+						break;
+					}
+				}
+
+			}
+			
+		}
+
+
+		return -1;
+	} while (false);
+
+
+	//for (int i = 0; i < *out_card_count; ++i)
+	//	pmj->delCard(*out_card);
+
+	return WIK_NULL;
+}
+
 int SRRobot::analysisOutCard(unsigned char * out_card, unsigned char * out_card_count)
 {	
+	return getNewOutCard(out_card, out_card_count);
+
 	// 数据校验
 	if (out_card == nullptr || out_card_count == nullptr)
 		return -87;
@@ -549,7 +779,6 @@ int SRRobot::analysisOutCard(unsigned char * out_card, unsigned char * out_card_
 
 		// 获得所有孤立2个空位的不连续单牌  [122334 7] 
 		{
-
 			vec_index.clear();
 			for (int idx = 0; (idx = pmj->getIntervalTwo(idx)) != -1; ++idx) {
 				if (pmj->index((unsigned char)idx) >= 2) {
@@ -589,9 +818,6 @@ int SRRobot::analysisOutCard(unsigned char * out_card, unsigned char * out_card_
 			}
 
 		}
-
-
-
 
 		// 获得所有可供打出的不连续单张 [1 3 567]   
 		{
@@ -702,8 +928,6 @@ int SRRobot::analysisOutCard(unsigned char * out_card, unsigned char * out_card_
 					}
 
 				}
-
-
 
 				*out_card = SRAnalysis::switchToCardData(temp_index);
 				*out_card_count = 1;

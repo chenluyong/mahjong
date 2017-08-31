@@ -60,5 +60,12 @@ enum enDirection {
 };
 
 
+struct stTeamKind {
+	unsigned char kind;
+	unsigned char card[4];
+	unsigned char eye;
+};
+
+
 
 #endif // _SHANREN_GLOBAL_H_

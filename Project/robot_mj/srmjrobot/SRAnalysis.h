@@ -31,6 +31,11 @@ public:
 
 	static bool isValidCard(unsigned char cbCardData);
 
+	// 花牌分析 万花筒
+	// outCardIndex : 返回牌型的下标
+	static int analysisHuaPai(const unsigned char * cardIndexBegin, const unsigned char* cardIndexEnd,
+		unsigned char* outCardIndex, char* outCount);
+
 protected:
 
 	static int isWin(const unsigned char _cardIndex[], int _duiIndex = 0);
