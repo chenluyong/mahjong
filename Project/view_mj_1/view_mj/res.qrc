@@ -2,4 +2,8 @@
     <qresource prefix="/ico">
         <file alias="mahjong">res/ico/mahjong.jpg</file>
     </qresource>
+    <qresource prefix="/bg">
+        <file alias="background">res/bg/background.jpg</file>
+        <file alias="back">res/bg/back.jpg</file>
+    </qresource>
 </RCC>

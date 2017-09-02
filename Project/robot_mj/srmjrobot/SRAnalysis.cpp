@@ -20,7 +20,7 @@ int SRAnalysis::isWin(const unsigned char * data, unsigned char count) {
 	unsigned char card_index[MAX_INDEX] = {};
 
 	// 数据转换为索引模式(如果数据有误，可能会造成数组越界)
-	for (int i = 0; i < count; ++i)
+	for (int i = 0; i < MAX_COUNT; ++i)
 		card_index[switchToCardIndex(data[i])]++;
 			   
 
@@ -87,16 +87,14 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 #endif
 	memcpy(card_index, cardIndexBegin, data_size);
 
-
-
+	// 出牌权重指数
+	int ret_weight = 10;
 	do {
-		// 1234  2345 花型分析
-		{
-
-		}
+		
 
 
 		// 隔两单牌分析 不处理将牌
+		ret_weight--;
 		{
 
 			for (int index_begin = 0; index_begin < data_size; ++index_begin) {
@@ -126,8 +124,14 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 				break;
 		}
 
+		// 1234  2345 花型分析
+		ret_weight--;
+		{
+
+		}
 
 		// 隔一单分析
+		ret_weight--;
 		{
 			for (int index_begin = 0; index_begin < data_size; ++index_begin) {
 				// 没有牌 或者 牌在指定的范围之前 都选择跳过
@@ -155,6 +159,7 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 		
 
 		// 1123  5667 5677 56778
+		ret_weight--;
 		{
 			// 组合数量变量声明		
 			BYTE kind_item_count = 0;
@@ -222,6 +227,7 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 
 
 		// 112 334 455
+		ret_weight--;
 		{
 			BYTE kind_item_count = 0;
 			stTeamKind team_kind[MAX_COUNT] = {};
@@ -267,6 +273,7 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 
 
 		// 最后的最佳组合分析（这里对card_index做了数据修改）
+		ret_weight--;
 		{
 			for (int i = 0; i < data_size; ++i) {
 				// @bug : 11123 567 678 999
@@ -309,7 +316,7 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 
 	} while (false);
 
-	return 0;
+	return ret_weight;
 }
 
 int SRAnalysis::getKeAndShun(const unsigned char _cardIndex[]) {
@@ -380,6 +387,7 @@ int SRAnalysis::isAllKeAndShun(const unsigned char _cardIndex[]) {
 	}
 	return card_count;
 }
+
 unsigned char SRAnalysis::switchToCardIndex(unsigned char cbCardData) {
 	return ((cbCardData&MASK_COLOR) >> 4) * 9 + (cbCardData&MASK_VALUE) - 1;
 }

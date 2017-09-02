@@ -6,6 +6,7 @@
 class QPushButton;
 class SRMahjongWidget;
 class SRMahjongHallWidget;
+class SRMahjongSeatHallWidget;
 
 class SRRobot;
 class SRMahjong;
@@ -81,6 +82,8 @@ private:
     QPushButton* touchCard_;
     QPushButton* analysisOutCard_;
     QPushButton* analysisCard_;
+
+    SRMahjongSeatHallWidget* seatHallWidget_;
 };
 
 #endif // SRMAHJONGSEATWIDGET_H

@@ -1,6 +1,7 @@
 #include "srmahjongseatwidget.h"
 #include "control/srmahjongwidget.h"
 #include "srmahjonghallwidget.h"
+#include "srmahjongseathallwidget.h"
 
 #include <QDebug>
 #include <QBoxLayout>
@@ -126,14 +127,24 @@ void SRMahjongSeatWidget::onPlayerOutCard(enDirection drc, unsigned char data)
 
     int ret_action = robot_->getAction(drc,data);
 
-    if (ret_action == WIK_GANG) {
-//        emit sigAction(direction_, ret_action, data);
-    }
-    else if (ret_action == WIK_PENG) {
-//        emit sigAction(direction_, ret_action, data);
+    if (ret_action == WIK_GANG || ret_action == WIK_PENG) {
+        setStyleSheet("QWidget{background-color:rgb(0,255,122);}" \
+                      "QWidget:hover{border: 3px solid red;}");
+        for (auto item : listMahjong_) {
+            if (data == item->getCardData()) {
+                QPen pen(QColor(255,2,0));
+                item->setPen(&pen);
+            }
+        }
     }
     else if (ret_action == WIK_CHI_HU) {
-//        emit sigHu(direction_);
+        setStyleSheet("QWidget{background-color:rgb(255,0,0);}" \
+                      "QWidget:hover{border: 3px solid red;}");
+    }
+    else {
+//        setStyleSheet("QWidget{background-color:green;}" \
+//                      "QWidget:hover{border: 1px solid red;}");
+
     }
 
     return;
@@ -198,7 +209,7 @@ void SRMahjongSeatWidget::onMahjongKnockout(QWidget *object)
 }
 void SRMahjongSeatWidget::onTouchCard()
 {
-    robot_->touchCard(hallWidget_->getInvisibleMahjongPool()->pop_front());
+    robot_->touchCard(hallWidget_->getOneCard());
     upMahjongBox();
     qDebug() << direction_ << "onTouchCard";
 

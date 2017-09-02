@@ -5,8 +5,11 @@
 
 #include <QWidget>
 
+class QGridLayout;
 class SRInvisibleMahjongPool;
 class SRVisibleMahjongPool;
+class SRMahjongWidget;
+class SRMahjongSeatHallWidget;
 
 class SRMahjongHallWidget : public QWidget
 {
@@ -18,6 +21,7 @@ public:
 
     // 获得牌墙上的牌
     SRInvisibleMahjongPool* getInvisibleMahjongPool(void) {return invisibleMahjongPool_;}
+    unsigned char getOneCard(void);
     // 获得牌池中的牌
     SRVisibleMahjongPool* getVisibleMahjongPool(void) {return visibleMahjongPool_;}
 
@@ -46,8 +50,18 @@ protected:
     virtual void paintEvent(QPaintEvent *event);
 
 private:
+    // 不可见的
+    QGridLayout* invisibleLayout_;
     SRInvisibleMahjongPool* invisibleMahjongPool_;
+    QList<SRMahjongWidget*> listInvisibleMahjong_;
+    // 可见的
+    QGridLayout* visibleLayout_;
     SRVisibleMahjongPool* visibleMahjongPool_;
+    QList<SRMahjongWidget*> listVisibleMahjong_;
+
+    SRMahjongSeatHallWidget* seatHallWidget_[GAME_PLAYER];
+    QWidget* hallWidget_;
+    QList<SRMahjongWidget*> listUndefineMahjong_;
 
     unsigned char cbCardDataArray_[MAX_REPERTORY + 1];
 };

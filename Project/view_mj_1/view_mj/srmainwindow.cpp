@@ -13,7 +13,7 @@
 SRMainWindow::SRMainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-
+    setStyleSheet("background-color:rgb(1,15,5);");
     // 设置中心窗口
     mahjongTable_ = new SRMahjongTableWidget();
     setCentralWidget(mahjongTable_);

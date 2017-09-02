@@ -38,14 +38,16 @@ SOURCES += \
     control/srmahjongwidget.cpp \
     srmahjongtablewidget.cpp \
     srmahjongseatwidget.cpp \
-    srmahjonghallwidget.cpp
+    srmahjonghallwidget.cpp \
+    srmahjongseathallwidget.cpp
 
 HEADERS += \
         srmainwindow.h \
     control/srmahjongwidget.h \
     srmahjongtablewidget.h \
     srmahjongseatwidget.h \
-    srmahjonghallwidget.h
+    srmahjonghallwidget.h \
+    srmahjongseathallwidget.h
 
 RESOURCES += \
     res.qrc

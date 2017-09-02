@@ -1,6 +1,7 @@
 #include "srmahjongtablewidget.h"
 #include "srmahjonghallwidget.h"
 #include "srmahjongseatwidget.h"
+#include "srmahjongseathallwidget.h"
 
 #include <time.h>
 
@@ -67,7 +68,7 @@ void SRMahjongTableWidget::onOpen() {
         // 初始化麻将数据
         unsigned char temp_card_data[MAX_COUNT] = {};
         for (int i = 0; i < 13; ++i)
-            temp_card_data[i] = invisible_pool->pop_front();
+            temp_card_data[i] = hallWidget_->getOneCard();
 
         SRMahjong* temp_mj = new SRMahjong(temp_card_data, 13);
 
