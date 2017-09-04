@@ -172,5 +172,4 @@ void SRMahjongHallWidget::onOutCardToVisibleMahjongPool(enDirection direction,
     }
 
     visibleMahjongPool_->push_back(card);
-    emit sigOutCard(direction,card);
 }

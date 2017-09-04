@@ -539,7 +539,7 @@ int SRRobot::getNewOutCard(unsigned char * out_card, unsigned char * out_card_co
 						// 转移连牌 如 12  34 此类
 						std::vector<int> vec_shun_index;
 						{
-							for (int i = 0; i < vec_index.size(); ++i) {
+							for (size_t i = 0; i < vec_index.size(); ++i) {
 								// 若下标[i+1] 与 下标 [i] 相邻，则转移
 								if (i != 0 && 
 									vec_index.at(i - 1) + 1 == vec_index.at(i)
@@ -608,6 +608,9 @@ int SRRobot::getNewOutCard(unsigned char * out_card, unsigned char * out_card_co
 								break;
 							}
 						} // end 快速切牌判断结束
+						else {
+
+						}
 
 						  // 遍历检查幺九牌型
 						for (auto x : vec_index) {
@@ -895,15 +898,15 @@ int SRRobot::getAction(enDirection drc, unsigned char card) {
 	// 检验碰杠（四川麻将只有碰杠）
 	if (have_card_count == 3) {
 		// 杠牌逻辑分析
-		pmj->delCard(card);
-		pmj->delCard(card);
-		pmj->delCard(card);
+		//pmj->delCard(card);
+		//pmj->delCard(card);
+		//pmj->delCard(card);
 		return WIK_GANG;
 	}
 	else if (have_card_count == 2) {
 		// 碰牌逻辑分析  
-		pmj->delCard(card);
-		pmj->delCard(card);
+		//pmj->delCard(card);
+		//pmj->delCard(card);
 		return WIK_PENG;
 	}
 	

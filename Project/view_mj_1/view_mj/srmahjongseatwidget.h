@@ -60,6 +60,8 @@ private slots:
     void onAnalysisCard(void);
 
 protected:
+    // ³öÅÆ
+    void mahjongKnockout(unsigned char card);
 
     virtual void paintEvent(QPaintEvent *event);
 

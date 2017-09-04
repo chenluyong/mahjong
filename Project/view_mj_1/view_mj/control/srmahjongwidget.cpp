@@ -103,7 +103,7 @@ void SRMahjongWidget::mouseDoubleClickEvent(QMouseEvent *event)
         setStyleSheet("QWidget{background-color:orange;}" \
                       "QWidget:hover{border: 3px solid black;}");
         emit sigDoubleClick(this);
-        qDebug() <<  info_ << QStringLiteral("±»Ë«»÷");
+//        qDebug() <<  info_ << QStringLiteral("±»Ë«»÷");
     }
 }
 

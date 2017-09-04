@@ -19,7 +19,7 @@ SRMainWindow::SRMainWindow(QWidget *parent)
     setCentralWidget(mahjongTable_);
 
     // ³õÊ¼»¯»ù´¡¿ò¼Ü
-    setMinimumSize(1000,1000);
+    setMinimumSize(1000,800);
     initMenu();
 
 }
