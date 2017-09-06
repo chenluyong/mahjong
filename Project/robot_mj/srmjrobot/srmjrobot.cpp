@@ -504,6 +504,7 @@ int SRRobot::getNewOutCard(unsigned char * out_card, unsigned char * out_card_co
 			// 开始分析
 			{
 				std::vector<int> vec_index;
+				int arrweight[4] = {};
 
 				// 牌型解析
 				{
@@ -513,12 +514,12 @@ int SRRobot::getNewOutCard(unsigned char * out_card, unsigned char * out_card_co
 						unsigned char temp_card_index[MAX_COUNT] = {};
 						char temp_count = 0;
 						// 分析当前区间的花牌
-						int temp_weight = SRAnalysis::analysisHuaPai(&card_index[i * 9], &card_index[i * 9 + 9],
+						arrweight[i] = SRAnalysis::analysisHuaPai(&card_index[i * 9], &card_index[i * 9 + 9],
 							temp_card_index, &temp_count);
 
 						// 先分析最高出牌权重的麻将
-						if (temp_weight > huapai_weight) {
-							huapai_weight = temp_weight;
+						if (arrweight[i] > huapai_weight + 3) {
+							huapai_weight = arrweight[i];
 							vec_index.clear();
 						}
 
@@ -608,9 +609,35 @@ int SRRobot::getNewOutCard(unsigned char * out_card, unsigned char * out_card_co
 								break;
 							}
 						} // end 快速切牌判断结束
-						else {
+						else if (vec_index.empty()) {
 
-						}
+							for (int i = (int)enDirection::South;
+								i <= (int)enDirection::East; ++i) {
+								if (mahjong_[i] == nullptr || i == (int)direction_)
+									continue;
+
+								// 查看玩家拥有的牌型
+								if (2 == mahjong_[i]->have(SRAnalysis::switchToCardData(temp_index))) {
+									if (vec_shun_index.size() > 1) {
+										for (auto ritem = vec_shun_index.rbegin();
+											ritem != vec_shun_index.rend(); ++ritem) {
+											if ((*ritem) != temp_index) {
+												temp_index = (*ritem);
+											}
+										}
+									}
+									else if (vec_double_index.size() > 1) {
+										for (auto item : vec_double_index) {
+											if (item != temp_index) {
+												temp_index = item;
+											}
+										} // for end
+									}
+									
+								}
+								
+							} // for end
+						} // if vec_index.empty() end
 
 						  // 遍历检查幺九牌型
 						for (auto x : vec_index) {

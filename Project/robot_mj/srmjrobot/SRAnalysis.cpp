@@ -124,40 +124,6 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 				break;
 		}
 
-		// 1234  2345 花型分析
-		ret_weight--;
-		{
-
-		}
-
-		// 隔一单分析
-		ret_weight--;
-		{
-			for (int index_begin = 0; index_begin < data_size; ++index_begin) {
-				// 没有牌 或者 牌在指定的范围之前 都选择跳过
-				if (card_index[index_begin] == 0)
-					continue;
-
-				const int& arg1 = index_begin - 1;
-				const int& arg3 = index_begin + 1;
-
-				// 判断相邻
-				if ((arg1 >= 0 && card_index[arg1] > 0)
-					|| (arg3 < data_size && card_index[arg3] > 0)
-					|| (card_index[index_begin] == 3)) {
-					continue;
-				}
-
-				// 不连续的牌
-				(*outCardIndex) = index_begin;
-				++outCardIndex;
-				(*outCount)++;
-			}
-			if ((*outCount) > 0)
-				break;
-		}
-		
-
 		// 1123  5667 5677 56778
 		ret_weight--;
 		{
@@ -214,7 +180,7 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 
 						temp_index = (unsigned char)ridx3;
 					}
-					 
+
 					(*outCardIndex) = temp_index;
 					outCardIndex++;
 					(*outCount)++;
@@ -225,6 +191,39 @@ int SRAnalysis::analysisHuaPai(const unsigned char * cardIndexBegin, const unsig
 				break;
 		}
 
+		// 1234  2345 花型分析
+		ret_weight--;
+		{
+
+		}
+
+		// 隔一单分析
+		ret_weight--;
+		{
+			for (int index_begin = 0; index_begin < data_size; ++index_begin) {
+				// 没有牌 或者 牌在指定的范围之前 都选择跳过
+				if (card_index[index_begin] == 0)
+					continue;
+
+				const int& arg1 = index_begin - 1;
+				const int& arg3 = index_begin + 1;
+
+				// 判断相邻
+				if ((arg1 >= 0 && card_index[arg1] > 0)
+					|| (arg3 < data_size && card_index[arg3] > 0)
+					|| (card_index[index_begin] == 3)) {
+					continue;
+				}
+
+				// 不连续的牌
+				(*outCardIndex) = index_begin;
+				++outCardIndex;
+				(*outCount)++;
+			}
+			if ((*outCount) > 0)
+				break;
+		}
+		
 
 		// 112 334 455
 		ret_weight--;
